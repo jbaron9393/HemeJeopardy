@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HemePath Jeopardy!</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+/* ── Setup ─────────────────────────────────────── */
+.setup{position:fixed;inset:0;background:#030c1a;z-index:400;display:flex;align-items:center;justify-content:center;padding:20px;}
+.setup-card{background:#0d2451;border:3px solid #c9a227;border-radius:14px;padding:40px 36px;max-width:480px;width:100%;text-align:center;}
+.setup-title{font-family:'Anton',sans-serif;font-size:2.6rem;color:#f5c842;letter-spacing:2px;margin-bottom:4px;}
+.setup-sub{color:#8bb4d8;font-size:.9rem;margin-bottom:28px;}
+.num-label{font-size:.75rem;text-transform:uppercase;letter-spacing:1.5px;color:#8bb4d8;margin-bottom:10px;}
+.num-row{display:flex;gap:10px;justify-content:center;margin-bottom:24px;}
+.num-btn{width:46px;height:46px;border-radius:8px;background:#071428;border:2px solid #1e4080;color:#8bb4d8;font-size:1.1rem;font-weight:700;cursor:pointer;transition:all .15s;}
+.num-btn.sel{background:#c9a227;border-color:#c9a227;color:#030c1a;}
+.team-inputs{display:flex;flex-direction:column;gap:10px;margin-bottom:28px;}
+.trow{display:flex;align-items:center;gap:10px;}
+.tdot{width:14px;height:14px;border-radius:50%;flex-shrink:0;}
+.tinput{flex:1;background:#071428;border:2px solid #1e4080;border-radius:6px;padding:10px 14px;color:white;font-family:'Barlow',sans-serif;font-size:1rem;}
+.tinput:focus{outline:none;border-color:#c9a227;}
+.btn-start{background:#c9a227;color:#030c1a;font-family:'Anton',sans-serif;font-size:1.2rem;letter-spacing:1px;padding:14px 48px;border-radius:8px;border:none;cursor:pointer;transition:all .15s;}
+.btn-start:hover{filter:brightness(1.1);transform:translateY(-2px);}
+
+/* ── Header ─────────────────────────────────────── */
+.header{text-align:center;padding:14px 20px 8px;background:linear-gradient(180deg,#0d1f3e,#071428);border-bottom:3px solid #c9a227;position:relative;}
+.title{font-family:'Anton',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);color:#f5c842;letter-spacing:2px;}
+.subtitle{color:#8bb4d8;font-size:.85rem;margin-top:2px;letter-spacing:1px;}
+.edit-img-btn{position:absolute;top:50%;right:16px;transform:translateY(-50%);background:#1a3060;border:2px solid #1e4080;border-radius:8px;color:#8bb4d8;font-family:'Barlow',sans-serif;font-size:.78rem;font-weight:700;padding:7px 14px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.edit-img-btn:hover{border-color:#c9a227;color:#f5c842;}
+.edit-img-btn.active{background:#1a3a08;border-color:#4a8c1a;color:#a5d6a7;}
+
+/* ── Scoreboard ─────────────────────────────────── */
+.scoreboard{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;padding:10px 16px;background:#071428;}
+.team-card{background:#102040;border:2px solid #1e4080;border-radius:8px;padding:8px 18px;text-align:center;min-width:110px;cursor:pointer;transition:border-color .2s,background .2s;user-select:none;}
+.team-card.active{border-color:#f5c842;background:#1a3060;}
+.tname{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
+.tscore{font-family:'Anton',sans-serif;font-size:1.9rem;color:#f5c842;}
+.tscore.neg{color:#ff6b6b;}
+
+/* ── Edit banner ─────────────────────────────────── */
+.edit-banner{display:none;background:#0d200a;border-bottom:2px solid #4a8c1a;padding:8px 16px;text-align:center;font-size:.82rem;color:#a5d6a7;letter-spacing:.3px;}
+.edit-banner.on{display:block;}
+
+/* ── Board ──────────────────────────────────────── */
+.board-wrap{padding:10px 12px 20px;}
+.board{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;max-width:980px;margin:0 auto;}
+.cat-header{background:#102040;border:2px solid #1e4080;border-radius:6px;padding:10px 6px;text-align:center;font-size:.78rem;font-weight:700;color:#8bb4d8;text-transform:uppercase;letter-spacing:.5px;min-height:64px;display:flex;align-items:center;justify-content:center;line-height:1.3;}
+.cell{background:#0d2870;border:2px solid #1e5090;border-radius:6px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .15s ease;min-height:78px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;position:relative;}
+.cell:hover:not(.used){background:#1540a0;border-color:#4080d0;transform:scale(1.03);}
+.cell.used{background:#071020;border-color:#0a1e30;cursor:default;}
+.cell.edit-mode{background:#0d2010;border-color:#2a5010;}
+.cell.edit-mode:hover{background:#152808 !important;border-color:#4a8c1a !important;transform:scale(1.03);}
+.cell .pts{font-family:'Anton',sans-serif;font-size:clamp(1.4rem,2.5vw,2rem);color:#f5c842;}
+.cell.used .pts{opacity:0;}
+.img-badge{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:#4a8c1a;}
+
+/* ── Daily Double ───────────────────────────────── */
+.dd-overlay{display:none;position:fixed;inset:0;background:rgba(3,12,26,.97);z-index:300;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px;}
+.dd-overlay.on{display:flex;}
+.dd-big{font-family:'Anton',sans-serif;font-size:clamp(4rem,10vw,7rem);color:#f5c842;line-height:1;animation:ddPop .5s cubic-bezier(.34,1.56,.64,1);}
+.dd-who{font-size:1.1rem;color:#8bb4d8;margin:10px 0 20px;}
+.dd-wager{background:#102040;border:2px solid #c9a227;border-radius:8px;padding:12px 18px;font-family:'Anton',sans-serif;font-size:2rem;color:#f5c842;text-align:center;width:200px;margin-bottom:20px;}
+.dd-wager:focus{outline:none;}
+@keyframes ddPop{from{opacity:0;transform:scale(.2);}to{opacity:1;transform:scale(1);}}
+
+/* ── Image Editor Modal ──────────────────────────── */
+.ie-overlay{display:none;position:fixed;inset:0;background:rgba(3,12,26,.96);z-index:260;align-items:center;justify-content:center;padding:16px;overflow-y:auto;}
+.ie-overlay.on{display:flex;}
+.ie-modal{background:#0d2451;border:3px solid #4a8c1a;border-radius:12px;max-width:640px;width:100%;padding:26px 26px 22px;animation:mIn .2s ease;}
+.ie-header{margin-bottom:20px;}
+.ie-title{font-family:'Anton',sans-serif;font-size:1.5rem;color:#a5d6a7;margin-bottom:4px;}
+.ie-qtext{font-size:.85rem;color:#8bb4d8;line-height:1.5;border-left:3px solid #4a8c1a;padding-left:10px;margin-top:8px;}
+.ie-slot{background:#071428;border:2px solid #1e4080;border-radius:8px;padding:16px 18px;margin-bottom:14px;}
+.ie-slot-label{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:12px;}
+.slot-q .ie-slot-label{color:#f5c842;}
+.slot-p .ie-slot-label{color:#64b5f6;}
+.upload-area{border:2px dashed #1e4080;border-radius:8px;padding:18px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
+.upload-area:hover{border-color:#4a8c1a;background:#0a1e0a;}
+.upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-icon{font-size:1.8rem;margin-bottom:6px;}
+.upload-text{font-size:.82rem;color:#8bb4d8;}
+.upload-text strong{color:#a5d6a7;}
+.preview-block{margin-top:12px;display:none;}
+.preview-block.on{display:block;}
+.preview-img{max-width:100%;max-height:260px;border-radius:6px;border:2px solid #2a6e3e;display:block;margin:0 auto 10px;object-fit:contain;background:#030c1a;}
+.preview-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.preview-fname{font-size:.75rem;color:#8bb4d8;word-break:break-all;}
+.btn-rm{background:#2a1212;border:1px solid #6b2222;color:#ffaaaa;border-radius:6px;padding:5px 14px;font-family:'Barlow',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;}
+.btn-rm:hover{background:#401818;}
+.ie-footer{display:flex;justify-content:flex-end;margin-top:6px;}
+.btn-ie-done{background:#4a8c1a;color:white;border:none;border-radius:8px;padding:10px 32px;font-family:'Barlow',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;}
+.btn-ie-done:hover{filter:brightness(1.1);}
+
+/* ── Question Modal ──────────────────────────────── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(3,12,26,.95);z-index:200;overflow-y:auto;padding:16px;}
+.modal-overlay.on{display:flex;align-items:center;justify-content:center;}
+.modal{background:#0d2451;border:3px solid #c9a227;border-radius:12px;max-width:760px;width:100%;padding:28px 28px 24px;animation:mIn .25s ease;}
+@keyframes mIn{from{opacity:0;transform:scale(.95) translateY(-8px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.m-cat{font-size:.72rem;text-transform:uppercase;letter-spacing:2px;color:#8bb4d8;margin-bottom:6px;}
+.m-pts{font-family:'Anton',sans-serif;font-size:2.2rem;color:#f5c842;margin-bottom:16px;}
+.m-q{font-size:1.3rem;font-weight:600;line-height:1.5;color:white;margin-bottom:14px;}
+.modal-img{max-width:100%;max-height:320px;border-radius:8px;display:block;margin:0 auto 16px;object-fit:contain;background:#030c1a;}
+.modal-img.q-style{border:2px solid #1e4080;}
+.modal-img.ans-style{border:2px solid #2a6e3e;}
+.modal-img.pearl-style{border:2px solid #1e4080;}
+.timer-bar{height:5px;background:#102040;border-radius:3px;margin-bottom:6px;overflow:hidden;}
+.timer-fill{height:100%;background:#f5c842;border-radius:3px;transition:width 1s linear,background .5s;}
+.timer-fill.warn{background:#ff9f43;}
+.timer-fill.danger{background:#ff6b6b;}
+.timer-lbl{font-size:.78rem;color:#8bb4d8;text-align:right;margin-bottom:16px;}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.btn{padding:9px 18px;border-radius:6px;border:none;font-family:'Barlow',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .15s;letter-spacing:.3px;}
+.btn:hover{filter:brightness(1.15);transform:translateY(-1px);}
+.btn:active{transform:scale(.97);}
+.btn-reveal{background:#c9a227;color:#030c1a;}
+.btn-pearl{background:#276e3e;color:white;}
+.btn-pause{background:#102040;color:#8bb4d8;border:1px solid #1e4080;}
+.btn-close{background:#3a1212;color:#ffaaaa;border:1px solid #6b2222;}
+.section{display:none;border-radius:8px;padding:14px 18px;margin-bottom:14px;animation:fadeUp .35s ease;}
+.section.on{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.ans-section{background:#071a0e;border:2px solid #2a6e3e;}
+.pearl-section{background:#071428;border:2px solid #1e4080;}
+.s-label{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:700;}
+.ans-label{color:#81c784;}
+.pearl-label{color:#64b5f6;}
+.ans-text{font-size:1.15rem;color:#a5d6a7;font-weight:600;line-height:1.5;margin-bottom:6px;}
+.pearl-text{font-size:.95rem;color:#bbdefb;line-height:1.7;margin-bottom:6px;}
+.score-section{display:none;border-top:1px solid #1e4080;padding-top:14px;}
+.score-section.on{display:block;}
+.score-label{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:#8bb4d8;margin-bottom:10px;font-weight:700;}
+.score-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-cor{background:#122a18;color:#a5d6a7;border:1px solid #2a6e3e;font-size:.8rem;padding:7px 13px;}
+.btn-inc{background:#2a1212;color:#ef9a9a;border:1px solid #6e2a2a;font-size:.8rem;padding:7px 13px;}
+.btn-cor:hover{background:#1e4024;}
+.btn-inc:hover{background:#401818;}
+.btn-cor:disabled,.btn-inc:disabled{opacity:.45;cursor:default;transform:none;}
+</style>
+</head>
+<body>
+
+<!-- ══ SETUP ════════════════════════════════════════ -->
+<div class="setup" id="setup">
+  <div class="setup-card">
+    <div class="setup-title">HemePath Jeopardy!</div>
+    <div class="setup-sub">Hematopathology Resident Review</div>
+    <div class="num-label">Number of teams</div>
+    <div class="num-row">
+      <button class="num-btn" onclick="setTeams(2)">2</button>
+      <button class="num-btn sel" onclick="setTeams(3)">3</button>
+      <button class="num-btn" onclick="setTeams(4)">4</button>
+    </div>
+    <div class="team-inputs" id="teamInputs"></div>
+    <button class="btn-start" onclick="startGame()">LET'S PLAY!</button>
+  </div>
+</div>
+
+<!-- ══ DAILY DOUBLE ══════════════════════════════════ -->
+<div class="dd-overlay" id="ddOverlay">
+  <div class="dd-big">DAILY<br>DOUBLE!</div>
+  <div class="dd-who" id="ddWho"></div>
+  <input class="dd-wager" id="ddWager" type="number" min="0" placeholder="Wager amount">
+  <button class="btn btn-reveal" style="font-size:1rem;padding:12px 32px;" onclick="confirmDD()">CONFIRM WAGER</button>
+</div>
+
+<!-- ══ GAME ══════════════════════════════════════════ -->
+<div id="game" style="display:none;">
+  <div class="header">
+    <div class="title">HemePath Jeopardy!</div>
+    <div class="subtitle">Hematopathology Resident Review — click a team card to select active team</div>
+    <button class="edit-img-btn" id="editImgBtn" onclick="toggleEditMode()">📷 Edit Images</button>
+  </div>
+  <div class="scoreboard" id="scoreboard"></div>
+  <div class="edit-banner" id="editBanner">📷 Image Edit Mode — click any cell to add or remove images for that question. Green dot = image attached. Click "Done Editing" when finished.</div>
+  <div class="board-wrap"><div class="board" id="board"></div></div>
+</div>
+
+<!-- ══ IMAGE EDITOR ══════════════════════════════════ -->
+<div class="ie-overlay" id="ieOverlay">
+  <div class="ie-modal">
+    <div class="ie-header">
+      <div class="ie-title" id="ieTitle">Edit Images</div>
+      <div class="ie-qtext" id="ieQText"></div>
+    </div>
+
+    <!-- Question image slot -->
+    <div class="ie-slot slot-q">
+      <div class="ie-slot-label">Question Image — shown when question is opened</div>
+      <div class="upload-area" id="uploadAreaQ" ondragover="dragOver(event)" ondrop="dropFile(event,'q')">
+        <input type="file" accept="image/*" id="fileQ" onchange="fileChosen(this,'q')">
+        <div class="upload-icon">🔬</div>
+        <div class="upload-text"><strong>Click to upload</strong> or drag &amp; drop<br>PNG, JPG, GIF, TIFF — any image</div>
+      </div>
+      <div class="preview-block" id="previewQ">
+        <img class="preview-img" id="prevImgQ" src="" alt="">
+        <div class="preview-footer">
+          <span class="preview-fname" id="prevNameQ"></span>
+          <button class="btn-rm" onclick="removeImg('q')">Remove</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Teaching Pearl image slot -->
+    <div class="ie-slot slot-p">
+      <div class="ie-slot-label">Teaching Pearl Image — revealed with the pearl</div>
+      <div class="upload-area" id="uploadAreaP" ondragover="dragOver(event)" ondrop="dropFile(event,'p')">
+        <input type="file" accept="image/*" id="fileP" onchange="fileChosen(this,'p')">
+        <div class="upload-icon">⚡</div>
+        <div class="upload-text"><strong>Click to upload</strong> or drag &amp; drop<br>PNG, JPG, GIF, TIFF — any image</div>
+      </div>
+      <div class="preview-block" id="previewP">
+        <img class="preview-img" id="prevImgP" src="" alt="">
+        <div class="preview-footer">
+          <span class="preview-fname" id="prevNameP"></span>
+          <button class="btn-rm" onclick="removeImg('p')">Remove</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ie-footer">
+      <button class="btn-ie-done" onclick="closeImgEditor()">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ QUESTION MODAL ════════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="m-cat" id="mCat"></div>
+    <div class="m-pts" id="mPts"></div>
+    <div class="m-q" id="mQ"></div>
+    <img id="mQImg" class="modal-img q-style" src="" alt="" style="display:none;">
+    <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
+    <div class="timer-lbl" id="timerLbl">30s</div>
+    <div class="btn-row">
+      <button class="btn btn-reveal" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+      <button class="btn btn-pearl" id="pearlBtn" onclick="revealPearl()" style="display:none;">Teaching Pearl</button>
+      <button class="btn btn-pause" id="pauseBtn" onclick="togglePause()">Pause</button>
+      <button class="btn btn-close" onclick="closeModal()">Close</button>
+    </div>
+    <div class="section ans-section" id="ansSection">
+      <div class="s-label ans-label">✓ Answer</div>
+      <div class="ans-text" id="ansText"></div>
+      <img id="mAnsImg" class="modal-img ans-style" src="" alt="" style="display:none;">
+    </div>
+    <div class="section pearl-section" id="pearlSection">
+      <div class="s-label pearl-label">⚡ Teaching Pearl</div>
+      <div class="pearl-text" id="pearlText"></div>
+      <img id="mPearlImg" class="modal-img pearl-style" src="" alt="" style="display:none;">
+    </div>
+    <div class="score-section" id="scoreSection">
+      <div class="score-label">Award points:</div>
+      <div class="score-btns" id="scoreBtns"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const COLORS=['#f5c842','#4fc3f7','#a5d6a7','#ff8a80'];
+const DOTS  =['#c9a227','#0288d1','#388e3c','#c62828'];
+const CATS  =['Morphology Madness','Flow Frenzy','Mutation Station','Classify This!','Clinical Correlates'];
+
+const QS=[
+[
+{q:"What peripheral smear finding is pathognomonic for AML, and when seen in bundles (faggot cells) constitutes a hematologic emergency?",
+ a:"Auer rods (bundle = APL/M3 = DIC emergency)",
+ p:"Auer rods are crystallized azurophilic granules in myeloblasts. Single rods → AML. Bundle-forming 'faggot cells' are specific to APL — signaling a DIC emergency. ATRA must be started immediately upon clinical suspicion; do NOT wait for cytogenetics. The DIC of APL can be rapidly fatal without treatment.",pts:100},
+{q:"These fragile lymphocytes rupture during peripheral smear preparation and are a hallmark finding in which B-cell malignancy?",
+ a:"Smudge cells → Chronic Lymphocytic Leukemia (CLL)",
+ p:"Smudge cells reflect the mechanical fragility of CLL lymphocytes. Adding albumin before smear prep reduces smudging (used to confirm CLL diagnosis). >30% smudge cells is strongly suggestive. Smudge cells are NOT counted in the WBC differential. The 'Tweed smear' using albumin is the confirmatory test.",pts:200},
+{q:"Teardrop cells (dacryocytes) with nucleated RBCs and left-shifted myeloid cells — called leukoerythroblastosis — is the classic peripheral smear picture of which myeloid neoplasm?",
+ a:"Primary Myelofibrosis (PMF)",
+ p:"Dacryocytes form as RBCs are squeezed through fibrotic marrow. The leukoerythroblastic picture = extramedullary hematopoiesis. This triad — teardrop cells + NRBCs + left shift — should always prompt bone marrow biopsy with reticulin/trichrome stain. Fibrosis grade (MF-0 to MF-3) is prognostically critical.",pts:300},
+{q:"A PMN with 6 nuclear lobes = what finding, and which 2 vitamin deficiencies classically cause this on peripheral smear?",
+ a:"Hypersegmented neutrophil; Vitamin B12 and Folate deficiency (megaloblastic anemia)",
+ p:"Normal PMNs have 2–4 lobes. Criteria: 1 PMN with ≥6 lobes OR ≥5% with ≥5 lobes = hypersegmentation. The defect is impaired DNA synthesis (B12/folate needed for thymidylate synthesis) → nuclear maturation lag with continued cytoplasmic growth = megaloblastic change. Macro-ovalocytes also seen.",pts:400},
+{q:"Sézary cells have what distinctive nuclear morphology? What CD4:CD8 ratio cutoff in peripheral blood is used diagnostically?",
+ a:"Cerebriform (grooved/convoluted) nuclei; CD4:CD8 ratio > 10:1",
+ p:"Sézary syndrome = leukemic phase of mycosis fungoides. Diagnostic criteria: >1,000 Sézary cells/µL OR CD4:CD8 >10 OR loss of CD7/CD26 on CD4+ cells. These are CD4+ T cells — best nuclear morphology seen on electron microscopy. Associated with erythroderma, intractable pruritus, and lymphadenopathy.",pts:500},
+],
+[
+{q:"Name the classic 5-marker immunophenotype that defines CLL on flow cytometry.",
+ a:"CD5+, CD23+, CD19+, CD20 dim, FMC7 negative",
+ p:"CLL hallmark = CD5/CD23 co-expression. CD20 is characteristically DIM (vs. mantle cell, which is bright). Matutes score ≥4/5 confirms CLL. ZAP-70, CD38, and IGHV mutation status provide prognostic info. CD38+ and ZAP-70+ correlate with unmutated IGHV and worse prognosis.",pts:100},
+{q:"Hairy Cell Leukemia has 'quad positivity' on flow cytometry. Name the 4 markers.",
+ a:"CD103, CD11c, CD25, CD123",
+ p:"HCL quad positivity: CD103 + CD11c + CD25 + CD123. Also TRAP positive on cytochemistry. BRAF V600E in ~95%. HCL-variant: CD25-negative, BRAF wild-type — different biology and treatment. Cladribine (2-CdA) is curative in most classic HCL. Bone marrow shows 'fried egg' pattern with clear cytoplasm.",pts:200},
+{q:"In APL (AML-M3), which major surface antigen is characteristically ABSENT on flow cytometry, serving as a critical diagnostic clue?",
+ a:"HLA-DR (and CD34 is also frequently negative)",
+ p:"APL flow: MPO bright, CD13+, CD33+, HLA-DR NEGATIVE, CD34 usually negative. HLA-DR negativity in the setting of clinical DIC + promyelocytic morphology = start ATRA NOW. Do NOT delay for FISH results. The combination of HLA-DR negativity + clinical context is sufficient to initiate treatment urgently.",pts:300},
+{q:"TdT marks what cellular property on flow cytometry, and in which 3 malignancy categories is it typically positive?",
+ a:"Lymphoid immaturity; positive in B-ALL, T-ALL, and ~30% of AML",
+ p:"TdT (terminal deoxynucleotidyl transferase) adds non-templated N-nucleotides during VDJ recombination — active only in immature lymphocytes. Positive in lymphoblastic leukemia/lymphoma (B and T ALL). About 30% of AML cases express TdT. Negative in all mature lymphoid malignancies. Useful for distinguishing ALL from mature lymphoma.",pts:400},
+{q:"Compared to normal plasma cells, myeloma plasma cells aberrantly LOSE which 2 B-cell antigens and GAIN which marker not normally expressed on plasma cells?",
+ a:"Lose CD19 and CD45 (dim/negative); gain aberrant CD56",
+ p:"Normal PCs: CD138+, CD38+, CD19+, CD45+, CD56-. Myeloma PCs: CD138+, CD38+, CD19-, CD45 dim/neg, CD56+. CD56 on PCs is aberrant and diagnostic — it's a neural/NK cell adhesion molecule not normally on plasma cells. CD45 loss correlates with poorer prognosis and worse response to chemotherapy. MRD by flow requires >6-color panels.",pts:500},
+],
+[
+{q:"BCR-ABL1 is created by what chromosomal translocation, defines which disease, and is the target of which class of drugs?",
+ a:"t(9;22) — Philadelphia chromosome; CML; tyrosine kinase inhibitors (imatinib, dasatinib, etc.)",
+ p:"BCR-ABL creates a constitutively active tyrosine kinase. Imatinib was the first targeted cancer therapy and revolutionized CML treatment. 2nd gen (dasatinib, nilotinib) and 3rd gen (ponatinib, asciminib) used for resistance. The T315I 'gatekeeper' mutation is resistant to all except ponatinib and asciminib. Monitor by BCR-ABL PCR (major molecular response = goal).",pts:100},
+{q:"JAK2 V617F is present in >95% of Polycythemia Vera. In which 2 other MPNs is it found, and at approximately what frequency?",
+ a:"Essential Thrombocythemia (~50%) and Primary Myelofibrosis (~50%)",
+ p:"JAK2 V617F (exon 14) = gain of function → constitutive JAK-STAT signaling. In JAK2-negative PV, check JAK2 exon 12. In JAK2-negative ET/PMF, test CALR (exon 8/9) first, then MPL (W515). The mutation is NOT disease-specific — phenotype is determined by other factors. Ruxolitinib (JAK1/2 inhibitor) is key therapy for high-risk MF and PV.",pts:200},
+{q:"NPM1 mutation is the most common AML mutation (~30%). What is its standalone prognosis, and how does co-occurring FLT3-ITD change this?",
+ a:"NPM1 alone = favorable; NPM1 + FLT3-ITD high allelic ratio (>0.5) = intermediate to poor prognosis",
+ p:"NPM1 mutation causes aberrant cytoplasmic NPM1 — detectable by IHC. WHO 2022 recognizes 'AML with mutated NPM1' as a distinct entity (can diagnose at any blast %). FLT3-ITD allelic ratio >0.5 negates NPM1 favorable benefit. NPM1 PCR is highly sensitive for MRD monitoring — quantitative PCR is the standard of care for tracking remission.",pts:300},
+{q:"FLT3-ITD stands for what, confers what prognosis in AML, and what 2 FDA-approved inhibitors target it?",
+ a:"Internal Tandem Duplication; adverse prognosis; Midostaurin (frontline) and Gilteritinib (relapsed/refractory)",
+ p:"FLT3-ITD duplicates the juxtamembrane domain → constitutive kinase activation. Allelic ratio (mutant/WT) >0.5 = worse prognosis. FLT3-TKD (D835) mutations are less prognostically significant. Quizartinib also FDA-approved for relapsed/refractory FLT3+ AML. All newly-diagnosed AML must have FLT3 testing at diagnosis — turnaround time matters for treatment planning.",pts:400},
+{q:"t(15;17) creates what fusion gene, causes which AML subtype, and is exploited therapeutically by what mechanism?",
+ a:"PML-RARA fusion → APL (AML-M3); ATRA (all-trans retinoic acid) causes differentiation by relieving transcriptional block and degrading the fusion protein",
+ p:"PML-RARA blocks myeloid differentiation at promyelocyte stage. ATRA binds the RARA portion → fusion protein degradation → differentiation. ATRA + arsenic trioxide = ~95% overall survival — one of the great oncology success stories. Watch for differentiation syndrome (fever, hypoxia, weight gain, effusions) — treat with dexamethasone 10mg IV BID. Differentiation syndrome can occur even after achieving remission.",pts:500},
+],
+[
+{q:"Aggressive B-cell lymphoma with 'starry sky' pattern, t(8;14), and Ki-67 near 100%. What is the diagnosis?",
+ a:"Burkitt Lymphoma",
+ p:"t(8;14) = MYC/IGH translocation. 'Starry sky' = tingible body macrophages engulfing apoptotic tumor cells. Three forms: endemic (EBV+, jaw mass in children), sporadic (abdominal in adults), immunodeficiency-associated. Ki-67 ~100% is characteristic. Standard R-CHOP is INSUFFICIENT — use R-CODOX-M/IVAC or DA-EPOCH-R. No concurrent BCL2/BCL6 rearrangements (those point to DLBCL).",pts:100},
+{q:"Reed-Sternberg cells define Classical Hodgkin Lymphoma. What is their immunophenotype, and what is the 'owl-eye' appearance?",
+ a:"CD30+, CD15+, CD45−, PAX5 dim, CD20−; 'owl-eye' = large prominent eosinophilic nucleoli in binucleated cells",
+ p:"RS cells are derived from germinal center B cells that lost B-cell programming. CD30 is the target of brentuximab vedotin (anti-CD30 ADC). NLPHL popcorn cells are CD20+, CD45+, CD15−, CD30− — entirely different biology. Classic RS cells are CD20-negative, but Rituximab is sometimes used in cHL anyway. Background inflammatory cells are key to subtype classification.",pts:200},
+{q:"DLBCL with concurrent MYC AND BCL2 chromosomal rearrangements = what diagnosis, and why does standard R-CHOP fail these patients?",
+ a:"High-Grade B-Cell Lymphoma (HGBCL) with MYC and BCL2 rearrangement ('double-hit'); BCL2 overexpression blocks R-CHOP-induced apoptosis",
+ p:"Double-hit requires FISH for MYC/BCL2/BCL6 in all DLBCL — usually identified by GEP or IHC first (MYC >40%, BCL2 >50% = 'double expressor,' distinct from double-hit). Triple-hit (MYC+BCL2+BCL6) is even more aggressive. Treat with DA-EPOCH-R or R-CODOX-M/IVAC. Venetoclax (BCL2 inhibitor) is being studied. Outcomes remain poor despite intensification.",pts:300},
+{q:"Mantle Cell Lymphoma is defined by what translocation and protein. How do you distinguish the aggressive from the indolent leukemic non-nodal variant?",
+ a:"t(11;14) → Cyclin D1 overexpression; indolent variant is SOX11−, often CD23+, IGHV mutated, no TP53 mutation",
+ p:"MCL: CD5+, CD23−, FMC7+, Cyclin D1+, SOX11+ (most). Indolent leukemic non-nodal MCL: SOX11−, CD23 variable, IGHV mutated. Blastoid/pleomorphic = most aggressive (blastoid resembles ALL). BTK inhibitors (ibrutinib, acalabrutinib, zanubrutinib) are key treatments. Cyclin D1-negative MCL exists (CCND2 rearrangement) — use SOX11 to confirm.",pts:400},
+{q:"A patient has splenomegaly, marrow fibrosis, leukoerythroblastosis, and constitutional symptoms. JAK2 is NEGATIVE. What 2 mutations do you test next, and what are their relative prognostic implications?",
+ a:"CALR (Type 1 = better, Type 2 = worse) and MPL mutations; diagnosis = Primary Myelofibrosis",
+ p:"PMF mutation hierarchy: JAK2 V617F (~50%) → CALR exon 8/9 (~30%) → MPL W515 (~5–8%) → triple-negative (rare, worst prognosis). CALR Type 1 (52-bp deletion) = better prognosis. CALR Type 2 (5-bp insertion) = worse, closer to JAK2+. DIPSS-Plus risk stratification guides allo-SCT decision — the only curative option. Ruxolitinib improves splenomegaly/symptoms but doesn't modify fibrosis.",pts:500},
+],
+[
+{q:"A warm AIHA patient will have what Direct Antiglobulin Test (DAT) result? Name 2 underlying diseases associated with warm AIHA.",
+ a:"DAT positive for IgG (+/− C3); associated with CLL, SLE, drugs (methyldopa, penicillin, cephalosporins)",
+ p:"Warm AIHA: IgG coats RBCs at 37°C → extravascular hemolysis in spleen. DAT+ IgG. Cold agglutinin disease: IgM + complement → DAT+ C3 only, IgG negative. Treatment: steroids → rituximab → splenectomy. In CLL-associated AIHA, avoid fludarabine (worsens AIHA). Paroxysmal cold hemoglobinuria = IgG Donath-Landsteiner antibody, biphasic complement fixation.",pts:100},
+{q:"Tumor Lysis Syndrome causes 4 classic metabolic derangements. Name all 4, and which 2 hematologic malignancies carry the highest risk?",
+ a:"Hyperkalemia, hyperphosphatemia, hyperuricemia, hypocalcemia; Burkitt lymphoma and B-ALL",
+ p:"TLS = massive cell lysis → release of K+, PO₄³⁻, uric acid intracellularly. Calcium precipitates with phosphate → hypocalcemia. AKI from urate crystal deposition. Prophylaxis: allopurinol (blocks xanthine oxidase) or rasburicase (converts uric acid → allantoin — contraindicated in G6PD deficiency, can cause methemoglobinemia). Monitor electrolytes every 6–8 hours. IV hydration is critical.",pts:200},
+{q:"Leukostasis in AML: at what blast count does it typically occur, what are the 2 most feared organ manifestations, and what is the initial emergency management?",
+ a:"Blasts >50,000–100,000/µL; CNS (AMS, stroke) and pulmonary (hypoxia, respiratory failure); Hydroxyurea ± leukapheresis + aggressive hydration",
+ p:"Myeloblasts carry higher leukostasis risk than lymphoblasts (larger, stickier, express adhesion molecules). Do NOT transfuse RBCs acutely — increases viscosity. Give platelets cautiously only for active bleeding. Hydroxyurea rapidly reduces blast count. Leukapheresis is temporizing — does not improve overall survival. Start definitive induction chemotherapy ASAP. Intracranial hemorrhage is the leading cause of early mortality.",pts:300},
+{q:"Hyperviscosity syndrome is classically caused by which B-cell malignancy and immunoglobulin class? Name the mutation present in ~90% of cases.",
+ a:"Waldenström Macroglobulinemia; IgM (pentameric, ~900kDa); MYD88 L265P mutation",
+ p:"IgM pentamers are massive (900kDa) → viscosity rises faster than IgG/IgA myeloma. Classic symptom: 'sausage-link' retinal veins on fundoscopy, visual changes, headache, neuropathy, bleeding. MYD88 L265P in ~90%; CXCR4 mutations in ~40% (affect ibrutinib response — CXCR4-mutated WM responds less well). Plasmapheresis for acute hyperviscosity crisis. Rituximab flare risk: IgM can spike acutely post-rituximab.",pts:400},
+{q:"The 2022 WHO classification revised AML diagnosis criteria. What is the blast threshold, and name 3 genetic abnormalities that allow AML diagnosis REGARDLESS of blast count?",
+ a:"≥20% blasts; OR t(8;21), inv(16)/t(16;16), t(15;17), NPM1 mutation, or biallelic CEBPA bZIP in-frame mutation (any of these at any blast %)",
+ p:"2022 WHO introduced 'AML defined by differentiation' — NPM1 mutated and biallelic CEBPA bZIP AML can be diagnosed at any blast %. The classic AML-defining cytogenetics (t(8;21), inv16, t(15;17)) also override the 20% rule. ICC 2022 differs slightly from WHO 2022 — know both for boards. 'MDS/AML' is a new borderline category (10–19% blasts with AML-defining mutations). Always test a broad molecular panel at diagnosis.",pts:500},
+],
+];
+
+// ── Image store ─────────────────────────────────────
+// key = "col-row", value = { q: dataURL|null, qName: str, p: dataURL|null, pName: str }
+const imgStore={};
+function imgs(col,row){
+  const k=`${col}-${row}`;
+  if(!imgStore[k]) imgStore[k]={q:null,qName:'',p:null,pName:''};
+  return imgStore[k];
+}
+function hasAnyImg(col,row){const d=imgStore[`${col}-${row}`];return !!(d&&(d.q||d.p));}
+
+// ── App state ───────────────────────────────────────
+let numTeams=3,teams=[],usedCells=new Set();
+let activeTeam=0,curCell=null,curPts=0,isDD=false,ddWager=0;
+let timerLeft=30,timerRunning=false,timerInterval=null;
+let editMode=false,editCell=null;
+
+const ddSet=new Set();
+while(ddSet.size<2){ddSet.add(`${Math.floor(Math.random()*5)}-${Math.floor(Math.random()*5)}`);}
+
+// ── Setup ───────────────────────────────────────────
+function setTeams(n){
+  numTeams=n;
+  document.querySelectorAll('.num-btn').forEach((b,i)=>b.classList.toggle('sel',i+2===n));
+  renderInputs();
+}
+function renderInputs(){
+  const names=['Team 1','Team 2','Team 3','Team 4'];
+  document.getElementById('teamInputs').innerHTML=Array.from({length:numTeams},(_,i)=>`
+    <div class="trow">
+      <div class="tdot" style="background:${DOTS[i]}"></div>
+      <input class="tinput" id="tn${i}" value="${names[i]}">
+    </div>`).join('');
+}
+function startGame(){
+  teams=Array.from({length:numTeams},(_,i)=>({
+    name:document.getElementById(`tn${i}`).value.trim()||`Team ${i+1}`,
+    score:0,color:COLORS[i]
+  }));
+  document.getElementById('setup').style.display='none';
+  document.getElementById('game').style.display='block';
+  renderSB();renderBoard();
+}
+
+// ── Scoreboard ──────────────────────────────────────
+function renderSB(){
+  document.getElementById('scoreboard').innerHTML=teams.map((t,i)=>`
+    <div class="team-card${i===activeTeam?' active':''}" onclick="activeTeam=${i};renderSB()">
+      <div class="tname" style="color:${t.color}">${t.name}</div>
+      <div class="tscore${t.score<0?' neg':''}">${t.score<0?'-':''}$${Math.abs(t.score)}</div>
+    </div>`).join('');
+}
+
+// ── Edit mode ───────────────────────────────────────
+function toggleEditMode(){
+  editMode=!editMode;
+  const btn=document.getElementById('editImgBtn');
+  btn.textContent=editMode?'✓ Done Editing':'📷 Edit Images';
+  btn.classList.toggle('active',editMode);
+  document.getElementById('editBanner').classList.toggle('on',editMode);
+  renderBoard();
+}
+
+// ── Board ───────────────────────────────────────────
+function renderBoard(){
+  const b=document.getElementById('board');
+  b.innerHTML=CATS.map(c=>`<div class="cat-header">${c}</div>`).join('');
+  for(let row=0;row<5;row++){
+    for(let col=0;col<5;col++){
+      const key=`${col}-${row}`,pts=(row+1)*100,used=usedCells.has(key);
+      const dot=hasAnyImg(col,row)?'<div class="img-badge" title="Image attached"></div>':'';
+      if(editMode){
+        const d=imgStore[key]||{};
+        const tags=[];
+        if(d.q) tags.push('<span style="font-size:.6rem;color:#a5d6a7;">Q</span>');
+        if(d.p) tags.push('<span style="font-size:.6rem;color:#64b5f6;">P</span>');
+        b.innerHTML+=`<div class="cell edit-mode" onclick="openImgEditor(${col},${row})">
+          ${dot}
+          <span class="pts" style="font-size:clamp(1rem,1.8vw,1.4rem);opacity:.7">$${pts}</span>
+          <span style="font-size:.65rem;color:#4a8c1a;margin-top:2px">${tags.length?tags.join(' '):'+ img'}</span>
+        </div>`;
+      } else {
+        b.innerHTML+=`<div class="cell${used?' used':''}" id="c${key}" ${used?'':` onclick="openQ(${col},${row},${pts},'${key}')"`}>
+          ${dot}<span class="pts">$${pts}</span></div>`;
+      }
+    }
+  }
+}
+
+// ── Image Editor ─────────────────────────────────────
+function openImgEditor(col,row){
+  editCell={col,row};
+  const q=QS[col][row];
+  const d=imgs(col,row);
+  document.getElementById('ieTitle').textContent=`${CATS[col]} — $${q.pts}`;
+  document.getElementById('ieQText').textContent=q.q;
+  setPreview('Q',d.q,d.qName);
+  setPreview('P',d.p,d.pName);
+  document.getElementById('fileQ').value='';
+  document.getElementById('fileP').value='';
+  document.getElementById('ieOverlay').classList.add('on');
+}
+function setPreview(slot,src,name){
+  const wrap=document.getElementById('preview'+slot);
+  const imgEl=document.getElementById('prevImg'+slot);
+  const nameEl=document.getElementById('prevName'+slot);
+  if(src){wrap.classList.add('on');imgEl.src=src;nameEl.textContent=name||'';}
+  else{wrap.classList.remove('on');imgEl.src='';nameEl.textContent='';}
+}
+function fileChosen(input,slot){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const d=imgs(editCell.col,editCell.row);
+    d[slot]=e.target.result;d[slot+'Name']=file.name;
+    setPreview(slot.toUpperCase(),e.target.result,file.name);
+  };
+  reader.readAsDataURL(file);
+}
+function dragOver(e){e.preventDefault();}
+function dropFile(e,slot){
+  e.preventDefault();
+  const file=e.dataTransfer.files[0];if(!file||!file.type.startsWith('image/'))return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const d=imgs(editCell.col,editCell.row);
+    d[slot]=ev.target.result;d[slot+'Name']=file.name;
+    setPreview(slot.toUpperCase(),ev.target.result,file.name);
+  };
+  reader.readAsDataURL(file);
+}
+function removeImg(slot){
+  const d=imgs(editCell.col,editCell.row);
+  d[slot]=null;d[slot+'Name']='';
+  setPreview(slot.toUpperCase(),null,'');
+  document.getElementById('file'+slot.toUpperCase()).value='';
+}
+function closeImgEditor(){
+  document.getElementById('ieOverlay').classList.remove('on');
+  editCell=null;renderBoard();
+}
+
+// ── Question flow ────────────────────────────────────
+function openQ(col,row,pts,key){
+  curCell={col,row};curPts=pts;isDD=ddSet.has(key);
+  if(isDD){
+    document.getElementById('ddWho').textContent=`${teams[activeTeam].name} — How much will you wager?`;
+    document.getElementById('ddWager').value=pts;
+    document.getElementById('ddOverlay').classList.add('on');
+  } else {showModal(col,row,pts,false);}
+}
+function confirmDD(){
+  ddWager=Math.max(0,parseInt(document.getElementById('ddWager').value)||0);
+  document.getElementById('ddOverlay').classList.remove('on');
+  showModal(curCell.col,curCell.row,ddWager,true);
+}
+function showModal(col,row,pts,daily){
+  const q=QS[col][row];
+  const d=imgs(col,row);
+  document.getElementById('mCat').textContent=CATS[col];
+  document.getElementById('mPts').textContent=daily?`Daily Double — $${pts} wagered`:`$${pts}`;
+  document.getElementById('mQ').textContent=q.q;
+  // Question image
+  const qi=document.getElementById('mQImg');
+  qi.src=d.q||'';qi.style.display=d.q?'block':'none';
+  // Reset answer/pearl
+  ['mAnsImg','mPearlImg'].forEach(id=>{const el=document.getElementById(id);el.src='';el.style.display='none';});
+  ['ansSection','pearlSection'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  document.getElementById('scoreSection').classList.remove('on');
+  document.getElementById('revealBtn').style.display='';
+  document.getElementById('pearlBtn').style.display='none';
+  document.getElementById('modalOverlay').classList.add('on');
+  startTimer(30);
+}
+
+// ── Timer ────────────────────────────────────────────
+function startTimer(s){
+  clearInterval(timerInterval);timerLeft=s;timerRunning=true;
+  const fill=document.getElementById('timerFill'),lbl=document.getElementById('timerLbl');
+  document.getElementById('pauseBtn').textContent='Pause';
+  fill.style.width='100%';fill.className='timer-fill';lbl.textContent=`${s}s`;
+  timerInterval=setInterval(()=>{
+    if(!timerRunning)return;
+    timerLeft--;
+    fill.style.width=(timerLeft/s*100)+'%';
+    lbl.textContent=timerLeft>0?`${timerLeft}s`:"Time's up!";
+    if(timerLeft<=10)fill.className='timer-fill warn';
+    if(timerLeft<=5)fill.className='timer-fill danger';
+    if(timerLeft<=0){clearInterval(timerInterval);revealAnswer();}
+  },1000);
+}
+function togglePause(){
+  timerRunning=!timerRunning;
+  document.getElementById('pauseBtn').textContent=timerRunning?'Pause':'Resume';
+}
+
+// ── Reveal ───────────────────────────────────────────
+function revealAnswer(){
+  clearInterval(timerInterval);timerRunning=false;
+  const q=QS[curCell.col][curCell.row];
+  const d=imgs(curCell.col,curCell.row);
+  document.getElementById('ansText').textContent=q.a;
+  // Show question image again in answer section (same image shown during question)
+  const ai=document.getElementById('mAnsImg');
+  ai.src=d.q||'';ai.style.display=d.q?'block':'none';
+  document.getElementById('ansSection').classList.add('on');
+  document.getElementById('revealBtn').style.display='none';
+  document.getElementById('pearlBtn').style.display='';
+  renderScoreBtns();
+  document.getElementById('scoreSection').classList.add('on');
+}
+function revealPearl(){
+  const q=QS[curCell.col][curCell.row];
+  const d=imgs(curCell.col,curCell.row);
+  document.getElementById('pearlText').textContent=q.p;
+  const pi=document.getElementById('mPearlImg');
+  pi.src=d.p||'';pi.style.display=d.p?'block':'none';
+  document.getElementById('pearlSection').classList.add('on');
+}
+function renderScoreBtns(){
+  const pts=isDD?ddWager:curPts;
+  document.getElementById('scoreBtns').innerHTML=teams.map((t,i)=>`
+    <button class="btn btn-cor" onclick="award(${i},${pts})">✓ ${t.name} +$${pts}</button>
+    <button class="btn btn-inc" onclick="award(${i},${-pts})">✗ ${t.name} -$${pts}</button>
+  `).join('');
+}
+function award(i,pts){
+  teams[i].score+=pts;
+  usedCells.add(`${curCell.col}-${curCell.row}`);
+  renderSB();renderBoard();
+  document.querySelectorAll('.btn-cor,.btn-inc').forEach(b=>b.disabled=true);
+  setTimeout(()=>document.querySelectorAll('.btn-cor,.btn-inc').forEach(b=>b.disabled=false),800);
+}
+function closeModal(){
+  clearInterval(timerInterval);
+  document.getElementById('modalOverlay').classList.remove('on');
+  if(curCell)usedCells.add(`${curCell.col}-${curCell.row}`);
+  renderBoard();curCell=null;
+}
+
+setTeams(3);renderInputs();
+</script>
+</body>
+</html>
