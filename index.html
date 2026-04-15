@@ -85,6 +85,12 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 .upload-icon{font-size:1.8rem;margin-bottom:6px;}
 .upload-text{font-size:.82rem;color:#8bb4d8;}
 .upload-text strong{color:#a5d6a7;}
+.folder-load{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.folder-input{flex:1;min-width:180px;background:#071428;border:1px solid #1e4080;border-radius:6px;padding:8px 10px;color:white;font-size:.8rem;}
+.folder-input:focus{outline:none;border-color:#4a8c1a;}
+.btn-folder{background:#163463;border:1px solid #2a5da8;color:#9bc3f1;border-radius:6px;padding:8px 12px;font-size:.74rem;font-weight:700;cursor:pointer;}
+.btn-folder:hover{filter:brightness(1.1);}
+.folder-hint{margin-top:8px;font-size:.72rem;color:#8bb4d8;line-height:1.4;}
 .preview-block{margin-top:12px;display:none;}
 .preview-block.on{display:block;}
 .preview-img{max-width:100%;max-height:260px;border-radius:6px;border:2px solid #2a6e3e;display:block;margin:0 auto 10px;object-fit:contain;background:#030c1a;}
@@ -196,6 +202,11 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
         <div class="upload-icon">🔬</div>
         <div class="upload-text"><strong>Click to upload</strong> or drag &amp; drop<br>PNG, JPG, GIF, TIFF — any image</div>
       </div>
+      <div class="folder-load">
+        <input class="folder-input" id="folderNameQ" placeholder="or load filename from /uploaded-images (e.g. smear1.jpg)">
+        <button class="btn-folder" onclick="loadFromFolder('q')">Load from Folder</button>
+      </div>
+      <div class="folder-hint">Tip: place reusable files in <strong>uploaded-images/</strong> next to this HTML file.</div>
       <div class="preview-block" id="previewQ">
         <img class="preview-img" id="prevImgQ" src="" alt="">
         <div class="preview-footer">
@@ -213,6 +224,11 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
         <div class="upload-icon">⚡</div>
         <div class="upload-text"><strong>Click to upload</strong> or drag &amp; drop<br>PNG, JPG, GIF, TIFF — any image</div>
       </div>
+      <div class="folder-load">
+        <input class="folder-input" id="folderNameP" placeholder="or load filename from /uploaded-images (e.g. pearl.png)">
+        <button class="btn-folder" onclick="loadFromFolder('p')">Load from Folder</button>
+      </div>
+      <div class="folder-hint">Folder images are loaded as relative paths: <strong>uploaded-images/your-file.ext</strong>.</div>
       <div class="preview-block" id="previewP">
         <img class="preview-img" id="prevImgP" src="" alt="">
         <div class="preview-footer">
@@ -355,6 +371,7 @@ const QS=[
 
 // ── Image store ─────────────────────────────────────
 // key = "col-row", value = { q: dataURL|null, qName: str, p: dataURL|null, pName: str }
+const UPLOADS_DIR='uploaded-images/';
 const imgStore={};
 function imgs(col,row){
   const k=`${col}-${row}`;
@@ -452,6 +469,8 @@ function openImgEditor(col,row){
   setPreview('P',d.p,d.pName);
   document.getElementById('fileQ').value='';
   document.getElementById('fileP').value='';
+  document.getElementById('folderNameQ').value='';
+  document.getElementById('folderNameP').value='';
   document.getElementById('ieOverlay').classList.add('on');
 }
 function setPreview(slot,src,name){
@@ -488,6 +507,17 @@ function removeImg(slot){
   d[slot]=null;d[slot+'Name']='';
   setPreview(slot.toUpperCase(),null,'');
   document.getElementById('file'+slot.toUpperCase()).value='';
+  document.getElementById('folderName'+slot.toUpperCase()).value='';
+}
+function loadFromFolder(slot){
+  const s=slot.toUpperCase();
+  const raw=document.getElementById('folderName'+s).value.trim();
+  if(!raw)return;
+  const clean=raw.replace(/^\/+/, '').replace(/^uploaded-images\//,'');
+  const rel=UPLOADS_DIR+clean;
+  const d=imgs(editCell.col,editCell.row);
+  d[slot]=rel;d[slot+'Name']=clean;
+  setPreview(s,rel,clean);
 }
 function closeImgEditor(){
   document.getElementById('ieOverlay').classList.remove('on');
