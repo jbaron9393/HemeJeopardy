@@ -599,11 +599,10 @@ function togglePause(){
 function revealAnswer(){
   clearInterval(timerInterval);timerRunning=false;
   const q=QS[curCell.col][curCell.row];
-  const d=imgs(curCell.col,curCell.row);
   document.getElementById('ansText').textContent=q.a;
-  // Show question image again in answer section (same image shown during question)
+  // Do not automatically repeat the question image in the answer section.
   const ai=document.getElementById('mAnsImg');
-  ai.src=d.q||'';ai.style.display=d.q?'block':'none';
+  ai.src='';ai.style.display='none';
   document.getElementById('ansSection').classList.add('on');
   document.getElementById('revealBtn').style.display='none';
   document.getElementById('pearlBtn').style.display='';
