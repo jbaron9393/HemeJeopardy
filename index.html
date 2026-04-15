@@ -203,10 +203,10 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
         <div class="upload-text"><strong>Click to upload</strong> or drag &amp; drop<br>PNG, JPG, GIF, TIFF — any image</div>
       </div>
       <div class="folder-load">
-        <input class="folder-input" id="folderNameQ" placeholder="or load filename from /uploaded-images (e.g. smear1.jpg)">
+        <input class="folder-input" id="folderNameQ" placeholder="or load filename from /docs/images (e.g. smear1.jpg)">
         <button class="btn-folder" onclick="loadFromFolder('q')">Load from Folder</button>
       </div>
-      <div class="folder-hint">Tip: place reusable files in <strong>uploaded-images/</strong> next to this HTML file.</div>
+      <div class="folder-hint">Tip: place reusable files in <strong>docs/images/</strong> next to this HTML file.</div>
       <div class="preview-block" id="previewQ">
         <img class="preview-img" id="prevImgQ" src="" alt="">
         <div class="preview-footer">
@@ -225,10 +225,10 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
         <div class="upload-text"><strong>Click to upload</strong> or drag &amp; drop<br>PNG, JPG, GIF, TIFF — any image</div>
       </div>
       <div class="folder-load">
-        <input class="folder-input" id="folderNameP" placeholder="or load filename from /uploaded-images (e.g. pearl.png)">
+        <input class="folder-input" id="folderNameP" placeholder="or load filename from /docs/images (e.g. pearl.png)">
         <button class="btn-folder" onclick="loadFromFolder('p')">Load from Folder</button>
       </div>
-      <div class="folder-hint">Folder images are loaded as relative paths: <strong>uploaded-images/your-file.ext</strong>.</div>
+      <div class="folder-hint">Folder images are loaded as relative paths: <strong>docs/images/your-file.ext</strong>.</div>
       <div class="preview-block" id="previewP">
         <img class="preview-img" id="prevImgP" src="" alt="">
         <div class="preview-footer">
@@ -371,8 +371,21 @@ const QS=[
 
 // ── Image store ─────────────────────────────────────
 // key = "col-row", value = { q: dataURL|null, qName: str, p: dataURL|null, pName: str }
-const UPLOADS_DIR='uploaded-images/';
-const imgStore={};
+const UPLOADS_DIR='docs/images/';
+const IMG_STORE_KEY='hemeJeopardy.imageStore.v1';
+const imgStore=loadImgStore();
+function loadImgStore(){
+  try{
+    const raw=localStorage.getItem(IMG_STORE_KEY);
+    if(!raw) return {};
+    const parsed=JSON.parse(raw);
+    return parsed&&typeof parsed==='object'?parsed:{};
+  }catch(_){return {};}
+}
+function saveImgStore(){
+  try{localStorage.setItem(IMG_STORE_KEY,JSON.stringify(imgStore));}
+  catch(err){console.warn('Could not persist image store:',err);}
+}
 function imgs(col,row){
   const k=`${col}-${row}`;
   if(!imgStore[k]) imgStore[k]={q:null,qName:'',p:null,pName:''};
@@ -487,6 +500,7 @@ function fileChosen(input,slot){
     const d=imgs(editCell.col,editCell.row);
     d[slot]=e.target.result;d[slot+'Name']=file.name;
     setPreview(slot.toUpperCase(),e.target.result,file.name);
+    saveImgStore();
   };
   reader.readAsDataURL(file);
 }
@@ -499,6 +513,7 @@ function dropFile(e,slot){
     const d=imgs(editCell.col,editCell.row);
     d[slot]=ev.target.result;d[slot+'Name']=file.name;
     setPreview(slot.toUpperCase(),ev.target.result,file.name);
+    saveImgStore();
   };
   reader.readAsDataURL(file);
 }
@@ -508,16 +523,18 @@ function removeImg(slot){
   setPreview(slot.toUpperCase(),null,'');
   document.getElementById('file'+slot.toUpperCase()).value='';
   document.getElementById('folderName'+slot.toUpperCase()).value='';
+  saveImgStore();
 }
 function loadFromFolder(slot){
   const s=slot.toUpperCase();
   const raw=document.getElementById('folderName'+s).value.trim();
   if(!raw)return;
-  const clean=raw.replace(/^\/+/, '').replace(/^uploaded-images\//,'');
+  const clean=raw.replace(/^\/+/, '').replace(/^docs\/images\//,'');
   const rel=UPLOADS_DIR+clean;
   const d=imgs(editCell.col,editCell.row);
   d[slot]=rel;d[slot+'Name']=clean;
   setPreview(s,rel,clean);
+  saveImgStore();
 }
 function closeImgEditor(){
   document.getElementById('ieOverlay').classList.remove('on');
