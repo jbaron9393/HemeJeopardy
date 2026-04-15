@@ -85,6 +85,12 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 .upload-icon{font-size:1.8rem;margin-bottom:6px;}
 .upload-text{font-size:.82rem;color:#8bb4d8;}
 .upload-text strong{color:#a5d6a7;}
+.folder-load{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.folder-input{flex:1;min-width:180px;background:#071428;border:1px solid #1e4080;border-radius:6px;padding:8px 10px;color:white;font-size:.8rem;}
+.folder-input:focus{outline:none;border-color:#4a8c1a;}
+.btn-folder{background:#163463;border:1px solid #2a5da8;color:#9bc3f1;border-radius:6px;padding:8px 12px;font-size:.74rem;font-weight:700;cursor:pointer;}
+.btn-folder:hover{filter:brightness(1.1);}
+.folder-hint{margin-top:8px;font-size:.72rem;color:#8bb4d8;line-height:1.4;}
 .preview-block{margin-top:12px;display:none;}
 .preview-block.on{display:block;}
 .preview-img{max-width:100%;max-height:260px;border-radius:6px;border:2px solid #2a6e3e;display:block;margin:0 auto 10px;object-fit:contain;background:#030c1a;}
@@ -196,6 +202,11 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
         <div class="upload-icon">🔬</div>
         <div class="upload-text"><strong>Click to upload</strong> or drag &amp; drop<br>PNG, JPG, GIF, TIFF — any image</div>
       </div>
+      <div class="folder-load">
+        <input class="folder-input" id="folderNameQ" placeholder="or load filename from /docs/images (e.g. smear1.jpg)">
+        <button class="btn-folder" onclick="loadFromFolder('q')">Load from Folder</button>
+      </div>
+      <div class="folder-hint">Tip: place reusable files in <strong>docs/images/</strong> next to this HTML file.</div>
       <div class="preview-block" id="previewQ">
         <img class="preview-img" id="prevImgQ" src="" alt="">
         <div class="preview-footer">
@@ -213,6 +224,11 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
         <div class="upload-icon">⚡</div>
         <div class="upload-text"><strong>Click to upload</strong> or drag &amp; drop<br>PNG, JPG, GIF, TIFF — any image</div>
       </div>
+      <div class="folder-load">
+        <input class="folder-input" id="folderNameP" placeholder="or load filename from /docs/images (e.g. pearl.png)">
+        <button class="btn-folder" onclick="loadFromFolder('p')">Load from Folder</button>
+      </div>
+      <div class="folder-hint">Folder images are loaded as relative paths: <strong>docs/images/your-file.ext</strong>.</div>
       <div class="preview-block" id="previewP">
         <img class="preview-img" id="prevImgP" src="" alt="">
         <div class="preview-footer">
@@ -355,7 +371,21 @@ const QS=[
 
 // ── Image store ─────────────────────────────────────
 // key = "col-row", value = { q: dataURL|null, qName: str, p: dataURL|null, pName: str }
-const imgStore={};
+const UPLOADS_DIR='docs/images/';
+const IMG_STORE_KEY='hemeJeopardy.imageStore.v1';
+const imgStore=loadImgStore();
+function loadImgStore(){
+  try{
+    const raw=localStorage.getItem(IMG_STORE_KEY);
+    if(!raw) return {};
+    const parsed=JSON.parse(raw);
+    return parsed&&typeof parsed==='object'?parsed:{};
+  }catch(_){return {};}
+}
+function saveImgStore(){
+  try{localStorage.setItem(IMG_STORE_KEY,JSON.stringify(imgStore));}
+  catch(err){console.warn('Could not persist image store:',err);}
+}
 function imgs(col,row){
   const k=`${col}-${row}`;
   if(!imgStore[k]) imgStore[k]={q:null,qName:'',p:null,pName:''};
@@ -452,6 +482,8 @@ function openImgEditor(col,row){
   setPreview('P',d.p,d.pName);
   document.getElementById('fileQ').value='';
   document.getElementById('fileP').value='';
+  document.getElementById('folderNameQ').value='';
+  document.getElementById('folderNameP').value='';
   document.getElementById('ieOverlay').classList.add('on');
 }
 function setPreview(slot,src,name){
@@ -468,6 +500,7 @@ function fileChosen(input,slot){
     const d=imgs(editCell.col,editCell.row);
     d[slot]=e.target.result;d[slot+'Name']=file.name;
     setPreview(slot.toUpperCase(),e.target.result,file.name);
+    saveImgStore();
   };
   reader.readAsDataURL(file);
 }
@@ -480,6 +513,7 @@ function dropFile(e,slot){
     const d=imgs(editCell.col,editCell.row);
     d[slot]=ev.target.result;d[slot+'Name']=file.name;
     setPreview(slot.toUpperCase(),ev.target.result,file.name);
+    saveImgStore();
   };
   reader.readAsDataURL(file);
 }
@@ -488,6 +522,19 @@ function removeImg(slot){
   d[slot]=null;d[slot+'Name']='';
   setPreview(slot.toUpperCase(),null,'');
   document.getElementById('file'+slot.toUpperCase()).value='';
+  document.getElementById('folderName'+slot.toUpperCase()).value='';
+  saveImgStore();
+}
+function loadFromFolder(slot){
+  const s=slot.toUpperCase();
+  const raw=document.getElementById('folderName'+s).value.trim();
+  if(!raw)return;
+  const clean=raw.replace(/^\/+/, '').replace(/^docs\/images\//,'');
+  const rel=UPLOADS_DIR+clean;
+  const d=imgs(editCell.col,editCell.row);
+  d[slot]=rel;d[slot+'Name']=clean;
+  setPreview(s,rel,clean);
+  saveImgStore();
 }
 function closeImgEditor(){
   document.getElementById('ieOverlay').classList.remove('on');
@@ -552,11 +599,10 @@ function togglePause(){
 function revealAnswer(){
   clearInterval(timerInterval);timerRunning=false;
   const q=QS[curCell.col][curCell.row];
-  const d=imgs(curCell.col,curCell.row);
   document.getElementById('ansText').textContent=q.a;
-  // Show question image again in answer section (same image shown during question)
+  // Do not automatically repeat the question image in the answer section.
   const ai=document.getElementById('mAnsImg');
-  ai.src=d.q||'';ai.style.display=d.q?'block':'none';
+  ai.src='';ai.style.display='none';
   document.getElementById('ansSection').classList.add('on');
   document.getElementById('revealBtn').style.display='none';
   document.getElementById('pearlBtn').style.display='';
