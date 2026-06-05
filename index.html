@@ -58,9 +58,9 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 .dd-wager{background:#102040;border:2px solid #c9a227;border-radius:8px;padding:12px 18px;font-family:'Anton',sans-serif;font-size:2rem;color:#f5c842;text-align:center;width:200px;margin-bottom:20px;}
 .dd-wager:focus{outline:none;}
 @keyframes ddPop{from{opacity:0;transform:scale(.2);}to{opacity:1;transform:scale(1);}}
-.ie-overlay{display:none;position:fixed;inset:0;background:rgba(3,12,26,.96);z-index:260;align-items:center;justify-content:center;padding:16px;overflow-y:auto;}
+.ie-overlay{display:none;position:fixed;inset:0;background:rgba(3,12,26,.96);z-index:260;align-items:flex-start;justify-content:center;padding:clamp(24px,4vh,48px) 16px 24px;overflow-y:auto;}
 .ie-overlay.on{display:flex;}
-.ie-modal{background:#0d2451;border:3px solid #4a8c1a;border-radius:12px;max-width:720px;width:100%;padding:26px 26px 22px;animation:mIn .2s ease;}
+.ie-modal{background:#0d2451;border:3px solid #4a8c1a;border-radius:12px;max-width:720px;width:100%;padding:26px 26px 22px;margin:0 auto;animation:mIn .2s ease;}
 .ie-header{margin-bottom:20px;}
 .ie-title{font-family:'Anton',sans-serif;font-size:1.5rem;color:#a5d6a7;margin-bottom:4px;}
 .ie-qtext{font-size:.85rem;color:#8bb4d8;line-height:1.5;border-left:3px solid #4a8c1a;padding-left:10px;margin-top:8px;}
