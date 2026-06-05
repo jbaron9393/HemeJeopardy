@@ -60,7 +60,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 @keyframes ddPop{from{opacity:0;transform:scale(.2);}to{opacity:1;transform:scale(1);}}
 .ie-overlay{display:none;position:fixed;inset:0;background:rgba(3,12,26,.96);z-index:260;align-items:center;justify-content:center;padding:16px;overflow-y:auto;}
 .ie-overlay.on{display:flex;}
-.ie-modal{background:#0d2451;border:3px solid #4a8c1a;border-radius:12px;max-width:640px;width:100%;padding:26px 26px 22px;animation:mIn .2s ease;}
+.ie-modal{background:#0d2451;border:3px solid #4a8c1a;border-radius:12px;max-width:720px;width:100%;padding:26px 26px 22px;animation:mIn .2s ease;}
 .ie-header{margin-bottom:20px;}
 .ie-title{font-family:'Anton',sans-serif;font-size:1.5rem;color:#a5d6a7;margin-bottom:4px;}
 .ie-qtext{font-size:.85rem;color:#8bb4d8;line-height:1.5;border-left:3px solid #4a8c1a;padding-left:10px;margin-top:8px;}
@@ -73,11 +73,19 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 .upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
 .upload-icon{font-size:1.8rem;margin-bottom:6px;}
 .upload-text{font-size:.82rem;color:#8bb4d8;}
+.upload-hint{font-size:.72rem;color:#5f8fbd;margin-top:4px;}
 .upload-text strong{color:#a5d6a7;}
 .preview-block{margin-top:12px;display:none;}
 .preview-block.on{display:block;}
-.preview-img{max-width:100%;max-height:260px;border-radius:6px;border:2px solid #2a6e3e;display:block;margin:0 auto 10px;object-fit:contain;background:#030c1a;}
+.preview-img{max-width:100%;max-height:320px;border-radius:6px;border:2px solid #2a6e3e;display:block;margin:0 auto 10px;object-fit:contain;background:#030c1a;}
 .preview-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.preview-actions,.upload-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.upload-actions{justify-content:center;margin-top:10px;}
+.size-control{display:flex;align-items:center;gap:10px;margin:10px 0;color:#8bb4d8;font-size:.78rem;}
+.size-control input{flex:1;accent-color:#4a8c1a;}
+.size-val{min-width:42px;text-align:right;color:#a5d6a7;font-weight:700;}
+.btn-paste,.btn-copy{background:#102040;border:1px solid #1e4080;color:#bbdefb;border-radius:6px;padding:5px 12px;font-family:'Barlow',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;}
+.btn-paste:hover,.btn-copy:hover{border-color:#4a8c1a;color:#a5d6a7;}
 .preview-fname{font-size:.75rem;color:#8bb4d8;word-break:break-all;}
 .btn-rm{background:#2a1212;border:1px solid #6b2222;color:#ffaaaa;border-radius:6px;padding:5px 14px;font-family:'Barlow',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;}
 .btn-rm:hover{background:#401818;}
@@ -91,7 +99,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 .m-cat{font-size:.72rem;text-transform:uppercase;letter-spacing:2px;color:#8bb4d8;margin-bottom:6px;}
 .m-pts{font-family:'Anton',sans-serif;font-size:2.2rem;color:#f5c842;margin-bottom:16px;}
 .m-q{font-size:1.3rem;font-weight:600;line-height:1.5;color:white;margin-bottom:14px;}
-.modal-img{max-width:100%;max-height:320px;border-radius:8px;display:block;margin:0 auto 16px;object-fit:contain;background:#030c1a;}
+.modal-img{max-width:100%;max-height:60vh;border-radius:8px;display:block;margin:0 auto 16px;object-fit:contain;background:#030c1a;}
 .modal-img.q-style{border:2px solid #1e4080;}
 .modal-img.ans-style{border:2px solid #2a6e3e;}
 .modal-img.pearl-style{border:2px solid #1e4080;}
@@ -240,31 +248,51 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
     </div>
     <div class="ie-slot slot-q">
       <div class="ie-slot-label">Question Image &mdash; shown when question is opened</div>
-      <div class="upload-area" ondragover="dragOver(event)" ondrop="dropFile(event,'q')">
+      <div class="upload-area" tabindex="0" onfocus="setPasteSlot('q')" onclick="setPasteSlot('q')" ondragover="dragOver(event)" ondrop="dropFile(event,'q')">
         <input type="file" accept="image/*" id="fileQ" onchange="fileChosen(this,'q')">
         <div class="upload-icon">&#128300;</div>
-        <div class="upload-text"><strong>Click to upload</strong> or drag &amp; drop</div>
+        <div class="upload-text"><strong>Click to upload</strong>, drag &amp; drop, or paste</div>
+        <div class="upload-hint">Tip: copy an image, click here, then press Ctrl/⌘+V.</div>
       </div>
+      <div class="upload-actions"><button class="btn-paste" onclick="pasteImg('q')">Paste from Clipboard</button></div>
       <div class="preview-block" id="previewQ">
         <img class="preview-img" id="prevImgQ" src="" alt="">
+        <label class="size-control">Image size
+          <input id="sizeQ" type="range" min="25" max="100" step="5" value="100" oninput="sizeChanged('q',this.value)">
+          <span class="size-val" id="sizeValQ">100%</span>
+        </label>
         <div class="preview-footer">
           <span class="preview-fname" id="prevNameQ"></span>
-          <button class="btn-rm" onclick="removeImg('q')">Remove</button>
+          <div class="preview-actions">
+            <button class="btn-copy" onclick="copyImg('q')">Copy</button>
+            <button class="btn-paste" onclick="pasteImg('q')">Paste</button>
+            <button class="btn-rm" onclick="removeImg('q')">Remove</button>
+          </div>
         </div>
       </div>
     </div>
     <div class="ie-slot slot-p">
       <div class="ie-slot-label">Teaching Pearl Image &mdash; revealed with the pearl</div>
-      <div class="upload-area" ondragover="dragOver(event)" ondrop="dropFile(event,'p')">
+      <div class="upload-area" tabindex="0" onfocus="setPasteSlot('p')" onclick="setPasteSlot('p')" ondragover="dragOver(event)" ondrop="dropFile(event,'p')">
         <input type="file" accept="image/*" id="fileP" onchange="fileChosen(this,'p')">
         <div class="upload-icon">&#9889;</div>
-        <div class="upload-text"><strong>Click to upload</strong> or drag &amp; drop</div>
+        <div class="upload-text"><strong>Click to upload</strong>, drag &amp; drop, or paste</div>
+        <div class="upload-hint">Tip: copy an image, click here, then press Ctrl/⌘+V.</div>
       </div>
+      <div class="upload-actions"><button class="btn-paste" onclick="pasteImg('p')">Paste from Clipboard</button></div>
       <div class="preview-block" id="previewP">
         <img class="preview-img" id="prevImgP" src="" alt="">
+        <label class="size-control">Image size
+          <input id="sizeP" type="range" min="25" max="100" step="5" value="100" oninput="sizeChanged('p',this.value)">
+          <span class="size-val" id="sizeValP">100%</span>
+        </label>
         <div class="preview-footer">
           <span class="preview-fname" id="prevNameP"></span>
-          <button class="btn-rm" onclick="removeImg('p')">Remove</button>
+          <div class="preview-actions">
+            <button class="btn-copy" onclick="copyImg('p')">Copy</button>
+            <button class="btn-paste" onclick="pasteImg('p')">Paste</button>
+            <button class="btn-rm" onclick="removeImg('p')">Remove</button>
+          </div>
         </div>
       </div>
     </div>
@@ -360,6 +388,7 @@ const FINAL_JEOPARDY={
 };
 
 const IMG_STORE_KEY='hemeJeopardy.imageStore.v2';
+const DEFAULT_IMAGE_SIZE=100;
 const imgStore=loadImgStore();
 function loadImgStore(){
   try{const raw=localStorage.getItem(IMG_STORE_KEY);if(!raw)return{};const p=JSON.parse(raw);return p&&typeof p==='object'?p:{};}
@@ -376,9 +405,18 @@ function getImgData(col,row,slot){
   const q=QS[col][row];
   return slot==='q'?q.qi:q.pi;
 }
+function getImgSize(col,row,slot){
+  const store=imgStore[`${col}-${row}`]||{};
+  const size=Number(store[slot+'Size']);
+  return Number.isFinite(size)?Math.min(100,Math.max(25,size)):DEFAULT_IMAGE_SIZE;
+}
 function imgs(col,row){
   const k=`${col}-${row}`;
-  if(!imgStore[k]) imgStore[k]={q:null,qName:'',p:null,pName:''};
+  if(!imgStore[k]) imgStore[k]={q:null,qName:'',qSize:DEFAULT_IMAGE_SIZE,p:null,pName:'',pSize:DEFAULT_IMAGE_SIZE};
+  if(!imgStore[k].qName) imgStore[k].qName='';
+  if(!imgStore[k].pName) imgStore[k].pName='';
+  if(!imgStore[k].qSize) imgStore[k].qSize=DEFAULT_IMAGE_SIZE;
+  if(!imgStore[k].pSize) imgStore[k].pSize=DEFAULT_IMAGE_SIZE;
   return imgStore[k];
 }
 function hasAnyImg(col,row){
@@ -388,6 +426,7 @@ function hasAnyImg(col,row){
 let numTeams=3,teams=[],usedCells=new Set();
 let activeTeam=0,curCell=null,curPts=0,isDD=false,ddWager=0;
 let timerLeft=30,timerRunning=false,timerInterval=null;
+let activePasteSlot='q',copiedImage=null;
 let editMode=false,editCell=null;
 let fjWagers=[],fjResolved=[],fjTimer=30,fjTimerRunning=false,fjTimerInterval=null;
 
@@ -468,42 +507,115 @@ function openImgEditor(col,row){
   setPreview('P',pi,store.pName||'(embedded)');
   document.getElementById('fileQ').value='';
   document.getElementById('fileP').value='';
+  activePasteSlot='q';
   document.getElementById('ieOverlay').classList.add('on');
+}
+function applyImageSize(imgEl,size){
+  imgEl.style.width=size+'%';
+}
+function updateSizeUI(slot,size){
+  const up=slot.toUpperCase();
+  const slider=document.getElementById('size'+up);
+  const label=document.getElementById('sizeVal'+up);
+  if(slider) slider.value=size;
+  if(label) label.textContent=size+'%';
 }
 function setPreview(slot,src,name){
   const wrap=document.getElementById('preview'+slot);
   const imgEl=document.getElementById('prevImg'+slot);
   const nameEl=document.getElementById('prevName'+slot);
+  const size=editCell?getImgSize(editCell.col,editCell.row,slot.toLowerCase()):DEFAULT_IMAGE_SIZE;
+  updateSizeUI(slot,size);
+  applyImageSize(imgEl,size);
   if(src){wrap.classList.add('on');imgEl.src=src;nameEl.textContent=name||'';}
   else{wrap.classList.remove('on');imgEl.src='';nameEl.textContent='';}
 }
+function storeImageData(slot,src,name,size){
+  if(!editCell||!src)return;
+  const d=imgs(editCell.col,editCell.row);
+  d[slot]=src;
+  d[slot+'Name']=name||'pasted image';
+  if(size) d[slot+'Size']=size;
+  setPreview(slot.toUpperCase(),src,d[slot+'Name']);
+  saveImgStore();
+}
+function storeImageFile(slot,file,name){
+  if(!file||!file.type.startsWith('image/'))return;
+  const reader=new FileReader();
+  reader.onload=e=>storeImageData(slot,e.target.result,name||file.name||'pasted image');
+  reader.readAsDataURL(file);
+}
 function fileChosen(input,slot){
   const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const d=imgs(editCell.col,editCell.row);
-    d[slot]=e.target.result;d[slot+'Name']=file.name;
-    setPreview(slot.toUpperCase(),e.target.result,file.name);
-    saveImgStore();
-  };
-  reader.readAsDataURL(file);
+  storeImageFile(slot,file,file.name);
 }
 function dragOver(e){e.preventDefault();}
 function dropFile(e,slot){
   e.preventDefault();
-  const file=e.dataTransfer.files[0];if(!file||!file.type.startsWith('image/'))return;
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    const d=imgs(editCell.col,editCell.row);
-    d[slot]=ev.target.result;d[slot+'Name']=file.name;
-    setPreview(slot.toUpperCase(),ev.target.result,file.name);
-    saveImgStore();
-  };
-  reader.readAsDataURL(file);
+  setPasteSlot(slot);
+  storeImageFile(slot,e.dataTransfer.files[0]);
+}
+function setPasteSlot(slot){activePasteSlot=slot;}
+function sizeChanged(slot,value){
+  if(!editCell)return;
+  const size=Math.min(100,Math.max(25,Number(value)||DEFAULT_IMAGE_SIZE));
+  const d=imgs(editCell.col,editCell.row);
+  d[slot+'Size']=size;
+  updateSizeUI(slot.toUpperCase(),size);
+  applyImageSize(document.getElementById('prevImg'+slot.toUpperCase()),size);
+  saveImgStore();
+}
+function clipboardItemToImageFile(items){
+  for(const item of items){
+    if(item.kind==='file'&&item.type.startsWith('image/')) return item.getAsFile();
+  }
+  return null;
+}
+document.addEventListener('paste',e=>{
+  const overlay=document.getElementById('ieOverlay');
+  if(!editCell||!overlay.classList.contains('on'))return;
+  const file=clipboardItemToImageFile(e.clipboardData?.items||[]);
+  if(!file)return;
+  e.preventDefault();
+  storeImageFile(activePasteSlot,file,'pasted image');
+});
+async function pasteImg(slot){
+  setPasteSlot(slot);
+  if(navigator.clipboard?.read){
+    try{
+      const items=await navigator.clipboard.read();
+      for(const item of items){
+        const type=item.types.find(t=>t.startsWith('image/'));
+        if(type){
+          const blob=await item.getType(type);
+          storeImageFile(slot,new File([blob],'pasted image',{type}));
+          return;
+        }
+      }
+      alert('Clipboard does not contain an image.');
+      return;
+    }catch(_){/* Fall back to the in-app copied image below. */}
+  }
+  if(copiedImage){
+    storeImageData(slot,copiedImage.src,copiedImage.name,copiedImage.size);
+    return;
+  }
+  alert('Click the upload area, then press Ctrl/⌘+V to paste an image from your clipboard.');
+}
+async function copyImg(slot){
+  if(!editCell)return;
+  const src=getImgData(editCell.col,editCell.row,slot);
+  if(!src)return;
+  copiedImage={src,name:imgs(editCell.col,editCell.row)[slot+'Name']||'copied image',size:getImgSize(editCell.col,editCell.row,slot)};
+  if(!navigator.clipboard?.write||typeof ClipboardItem==='undefined')return;
+  try{
+    const blob=await (await fetch(src)).blob();
+    await navigator.clipboard.write([new ClipboardItem({[blob.type||'image/png']:blob})]);
+  }catch(err){console.warn('Could not copy image to system clipboard:',err);}
 }
 function removeImg(slot){
   const d=imgs(editCell.col,editCell.row);
-  d[slot]=null;d[slot+'Name']='';
+  d[slot]=null;d[slot+'Name']='';d[slot+'Size']=DEFAULT_IMAGE_SIZE;
   const qi=getImgData(editCell.col,editCell.row,'q');
   const pi=getImgData(editCell.col,editCell.row,'p');
   setPreview('Q',qi,'(embedded)');
@@ -535,7 +647,7 @@ function showModal(col,row,pts,daily){
   document.getElementById('mPts').textContent=daily?`Daily Double — $${pts} wagered`:`$${pts}`;
   document.getElementById('mQ').textContent=q.q;
   const qiEl=document.getElementById('mQImg');
-  qiEl.src=qi||'';qiEl.style.display=qi?'block':'none';
+  qiEl.src=qi||'';qiEl.style.display=qi?'block':'none';applyImageSize(qiEl,getImgSize(col,row,'q'));
   ['ansSection','pearlSection'].forEach(id=>document.getElementById(id).classList.remove('on'));
   document.getElementById('scoreSection').classList.remove('on');
   document.getElementById('revealBtn').style.display='';
@@ -667,7 +779,7 @@ function revealPearl(){
   const pi=getImgData(curCell.col,curCell.row,'p');
   document.getElementById('pearlText').textContent=q.p;
   const piEl=document.getElementById('mPearlImg');
-  piEl.src=pi||'';piEl.style.display=pi?'block':'none';
+  piEl.src=pi||'';piEl.style.display=pi?'block':'none';applyImageSize(piEl,getImgSize(curCell.col,curCell.row,'p'));
   document.getElementById('pearlSection').classList.add('on');
 }
 function renderScoreBtns(){
