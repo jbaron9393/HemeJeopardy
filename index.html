@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,9 +27,12 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 .header{text-align:center;padding:14px 20px 8px;background:linear-gradient(180deg,#0d1f3e,#071428);border-bottom:3px solid #c9a227;position:relative;}
 .title{font-family:'Anton',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);color:#f5c842;letter-spacing:2px;}
 .subtitle{color:#8bb4d8;font-size:.85rem;margin-top:2px;letter-spacing:1px;}
-.edit-img-btn{position:absolute;top:50%;right:16px;transform:translateY(-50%);background:#1a3060;border:2px solid #1e4080;border-radius:8px;color:#8bb4d8;font-family:'Barlow',sans-serif;font-size:.78rem;font-weight:700;padding:7px 14px;cursor:pointer;transition:all .2s;white-space:nowrap;}
-.edit-img-btn:hover{border-color:#c9a227;color:#f5c842;}
+.header-actions{position:absolute;top:50%;right:16px;transform:translateY(-50%);display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
+.edit-img-btn,.data-btn{background:#1a3060;border:2px solid #1e4080;border-radius:8px;color:#8bb4d8;font-family:'Barlow',sans-serif;font-size:.78rem;font-weight:700;padding:7px 14px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.edit-img-btn:hover,.data-btn:hover{border-color:#c9a227;color:#f5c842;}
 .edit-img-btn.active{background:#1a3a08;border-color:#4a8c1a;color:#a5d6a7;}
+.data-btn.export{background:#2b2608;border-color:#8a7418;color:#f5c842;}
+.data-btn.import{background:#102040;}
 .final-btn{position:absolute;top:50%;left:16px;transform:translateY(-50%);background:#3a2a06;border:2px solid #c9a227;border-radius:8px;color:#f5c842;font-family:'Barlow',sans-serif;font-size:.78rem;font-weight:700;padding:7px 14px;cursor:pointer;transition:all .2s;white-space:nowrap;}
 .final-btn:hover{filter:brightness(1.1);}
 .scoreboard{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;padding:10px 16px;background:#071428;}
@@ -59,14 +61,15 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 .dd-wager{background:#102040;border:2px solid #c9a227;border-radius:8px;padding:12px 18px;font-family:'Anton',sans-serif;font-size:2rem;color:#f5c842;text-align:center;width:200px;margin-bottom:20px;}
 .dd-wager:focus{outline:none;}
 @keyframes ddPop{from{opacity:0;transform:scale(.2);}to{opacity:1;transform:scale(1);}}
-.ie-overlay{display:none;position:fixed;inset:0;background:rgba(3,12,26,.96);z-index:260;align-items:center;justify-content:center;padding:16px;overflow-y:auto;}
+.ie-overlay{display:none;position:fixed;inset:0;background:rgba(3,12,26,.96);z-index:260;align-items:flex-start;justify-content:center;padding:clamp(24px,4vh,48px) 16px 24px;overflow-y:auto;}
 .ie-overlay.on{display:flex;}
-.ie-modal{background:#0d2451;border:3px solid #4a8c1a;border-radius:12px;max-width:720px;width:100%;padding:26px 26px 22px;animation:mIn .2s ease;}
+.ie-modal{background:#0d2451;border:3px solid #4a8c1a;border-radius:12px;max-width:720px;width:100%;padding:26px 26px 22px;margin:0 auto;animation:mIn .2s ease;}
 .ie-header{margin-bottom:20px;}
 .ie-title{font-family:'Anton',sans-serif;font-size:1.5rem;color:#a5d6a7;margin-bottom:4px;}
 .ie-qtext{font-size:.85rem;color:#8bb4d8;line-height:1.5;border-left:3px solid #4a8c1a;padding-left:10px;margin-top:8px;}
 .text-edit{background:#071428;border:2px solid #1e4080;border-radius:8px;padding:16px 18px;margin-bottom:14px;}
-.text-edit-title{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;color:#f5c842;margin-bottom:12px;}
+.text-edit-title{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;color:#f5c842;margin-bottom:6px;}
+.text-edit-hint{font-size:.72rem;color:#8bb4d8;margin-bottom:12px;line-height:1.4;}
 .text-field{margin-bottom:10px;}
 .text-field:last-child{margin-bottom:0;}
 .text-field label{display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:1.2px;color:#8bb4d8;font-weight:700;margin-bottom:5px;}
@@ -84,6 +87,9 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 .upload-text{font-size:.82rem;color:#8bb4d8;}
 .upload-hint{font-size:.72rem;color:#5f8fbd;margin-top:4px;}
 .upload-text strong{color:#a5d6a7;}
+.image-slot-title{font-size:.72rem;text-transform:uppercase;letter-spacing:1.2px;color:#8bb4d8;font-weight:700;margin-bottom:8px;}
+.preview-block + .image-slot-title{margin-top:16px;}
+.image-slot-title .slot-num{color:#f5c842;}
 .preview-block{margin-top:12px;display:none;}
 .preview-block.on{display:block;}
 .preview-img{max-width:100%;max-height:320px;border-radius:6px;border:2px solid #2a6e3e;display:block;margin:0 auto 10px;object-fit:contain;background:#030c1a;}
@@ -103,12 +109,22 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 .btn-ie-done:hover{filter:brightness(1.1);}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(3,12,26,.95);z-index:200;overflow-y:auto;padding:16px;}
 .modal-overlay.on{display:flex;align-items:flex-start;justify-content:center;}
-.modal{background:#0d2451;border:3px solid #c9a227;border-radius:12px;max-width:760px;width:100%;padding:28px 28px 24px;animation:mIn .25s ease;}
+.modal{background:#0d2451;border:3px solid #c9a227;border-radius:12px;max-width:840px;width:100%;padding:28px 28px 24px;animation:mIn .25s ease;}
+.modal.wide{max-width:min(1180px,calc(100vw - 32px));}
 @keyframes mIn{from{opacity:0;transform:scale(.95) translateY(-8px);}to{opacity:1;transform:scale(1) translateY(0);}}
 .m-cat{font-size:.72rem;text-transform:uppercase;letter-spacing:2px;color:#8bb4d8;margin-bottom:6px;}
 .m-pts{font-family:'Anton',sans-serif;font-size:2.2rem;color:#f5c842;margin-bottom:16px;}
 .m-q{font-size:1.3rem;font-weight:600;line-height:1.5;color:white;margin-bottom:14px;}
-.modal-img{max-width:100%;max-height:60vh;border-radius:8px;display:block;margin:0 auto 16px;object-fit:contain;background:#030c1a;}
+.formatted-text{white-space:pre-wrap;}
+.formatted-text strong{font-weight:700;}
+.formatted-text em{font-style:italic;}
+.modal-img-stack{display:flex;flex-direction:column;gap:14px;margin-bottom:16px;}
+.modal-img-stack.multi{flex-direction:row;align-items:flex-start;justify-content:center;}
+.modal-img{max-width:100%;max-height:60vh;border-radius:8px;display:block;margin:0 auto;object-fit:contain;background:#030c1a;}
+.modal-img-stack.count-2 .modal-img{max-width:calc(50% - 7px);max-height:55vh;}
+.modal-img-stack.count-3 .modal-img{max-width:calc(33.333% - 10px);max-height:52vh;}
+.modal-img-stack:empty{display:none;}
+@media (max-width:700px){.modal-img-stack.multi{flex-direction:column;}.modal-img-stack.count-2 .modal-img,.modal-img-stack.count-3 .modal-img{max-width:100%;}}
 .modal-img.q-style{border:2px solid #1e4080;}
 .modal-img.ans-style{border:2px solid #2a6e3e;}
 .modal-img.pearl-style{border:2px solid #1e4080;}
@@ -195,7 +211,12 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
     <button class="final-btn" onclick="openFinalJeopardy()">&#127937; Final Jeopardy</button>
     <div class="title">HemePath Jeopardy!</div>
     <div class="subtitle">Hematopathology Resident Review &mdash; click a team card to select active team</div>
-    <button class="edit-img-btn" id="editImgBtn" onclick="toggleEditMode()">&#128247; Edit Images</button>
+    <div class="header-actions">
+      <button class="data-btn export" onclick="exportChanges()">&#128190; Export Changes</button>
+      <button class="data-btn import" onclick="document.getElementById('importChangesFile').click()">&#128193; Import Changes</button>
+      <button class="edit-img-btn" id="editImgBtn" onclick="toggleEditMode()">&#128247; Edit Images</button>
+    </div>
+    <input id="importChangesFile" type="file" accept="application/json,.json" style="display:none" onchange="importChangesFile(this)">
   </div>
   <div class="scoreboard" id="scoreboard"></div>
   <div class="edit-banner" id="editBanner">&#128247; Image Edit Mode &mdash; click any cell to add or remove images. Green dot = image attached. Click &ldquo;Done Editing&rdquo; when finished.</div>
@@ -223,7 +244,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
     <div class="fj-step" id="fjStepQuestion">
       <div class="fj-card">
         <div class="fj-label">Final Jeopardy Clue</div>
-        <div class="fj-q" id="fjQuestion"></div>
+        <div class="fj-q formatted-text" id="fjQuestion"></div>
         <img id="fjQImg" style="max-width:100%;max-height:300px;border-radius:8px;display:none;margin:12px auto 0;border:2px solid #1e4080;object-fit:contain;background:#030c1a;">
         <div class="fj-timer" id="fjTimer">30s</div>
       </div>
@@ -235,7 +256,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
     <div class="fj-step" id="fjStepAnswer">
       <div class="fj-card">
         <div class="fj-label">Correct Response</div>
-        <div class="fj-answer" id="fjAnswer"></div>
+        <div class="fj-answer formatted-text" id="fjAnswer"></div>
         <img id="fjAnsImg" style="max-width:100%;max-height:300px;border-radius:8px;display:none;margin:12px auto 0;border:2px solid #2a6e3e;object-fit:contain;background:#030c1a;">
       </div>
       <div class="fj-score-actions">
@@ -257,6 +278,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
     </div>
     <div class="text-edit">
       <div class="text-edit-title">Quick Text Edits</div>
+      <div class="text-edit-hint">Line breaks, indentation, and hyphenated bullets are preserved. Use **bold** and *italic* for emphasis.</div>
       <div class="text-field">
         <label for="editCatText">Category</label>
         <input class="text-input" id="editCatText" type="text" oninput="textChanged('cat',this.value)">
@@ -275,7 +297,9 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
       </div>
     </div>
     <div class="ie-slot slot-q">
-      <div class="ie-slot-label">Question Image &mdash; shown when question is opened</div>
+      <div class="ie-slot-label">Question Images &mdash; shown when question is opened</div>
+      <div class="upload-hint" style="margin-bottom:12px;">Add up to 2 question images.</div>
+      <div class="image-slot-title"><span class="slot-num">Image 1</span> of 2</div>
       <div class="upload-area" tabindex="0" onfocus="setPasteSlot('q')" onclick="setPasteSlot('q')" ondragover="dragOver(event)" ondrop="dropFile(event,'q')">
         <input type="file" accept="image/*" id="fileQ" onchange="fileChosen(this,'q')">
         <div class="upload-icon">&#128300;</div>
@@ -298,9 +322,34 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
           </div>
         </div>
       </div>
+      <div class="image-slot-title"><span class="slot-num">Image 2</span> of 2</div>
+      <div class="upload-area" tabindex="0" onfocus="setPasteSlot('q2')" onclick="setPasteSlot('q2')" ondragover="dragOver(event)" ondrop="dropFile(event,'q2')">
+        <input type="file" accept="image/*" id="fileQ2" onchange="fileChosen(this,'q2')">
+        <div class="upload-icon">&#128300;</div>
+        <div class="upload-text"><strong>Click to upload</strong>, drag &amp; drop, or paste</div>
+        <div class="upload-hint">Tip: copy an image, click here, then press Ctrl/⌘+V.</div>
+      </div>
+      <div class="upload-actions"><button class="btn-paste" onclick="pasteImg('q2')">Paste from Clipboard</button></div>
+      <div class="preview-block" id="previewQ2">
+        <img class="preview-img" id="prevImgQ2" src="" alt="">
+        <label class="size-control">Image size
+          <input id="sizeQ2" type="range" min="25" max="100" step="5" value="100" oninput="sizeChanged('q2',this.value)">
+          <span class="size-val" id="sizeValQ2">100%</span>
+        </label>
+        <div class="preview-footer">
+          <span class="preview-fname" id="prevNameQ2"></span>
+          <div class="preview-actions">
+            <button class="btn-copy" onclick="copyImg('q2')">Copy</button>
+            <button class="btn-paste" onclick="pasteImg('q2')">Paste</button>
+            <button class="btn-rm" onclick="removeImg('q2')">Remove</button>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="ie-slot slot-p">
-      <div class="ie-slot-label">Teaching Pearl Image &mdash; revealed with the pearl</div>
+      <div class="ie-slot-label">Teaching Pearl Images &mdash; revealed with the pearl</div>
+      <div class="upload-hint" style="margin-bottom:12px;">Add up to 3 teaching pearl images.</div>
+      <div class="image-slot-title"><span class="slot-num">Image 1</span> of 3</div>
       <div class="upload-area" tabindex="0" onfocus="setPasteSlot('p')" onclick="setPasteSlot('p')" ondragover="dragOver(event)" ondrop="dropFile(event,'p')">
         <input type="file" accept="image/*" id="fileP" onchange="fileChosen(this,'p')">
         <div class="upload-icon">&#9889;</div>
@@ -323,6 +372,52 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
           </div>
         </div>
       </div>
+      <div class="image-slot-title"><span class="slot-num">Image 2</span> of 3</div>
+      <div class="upload-area" tabindex="0" onfocus="setPasteSlot('p2')" onclick="setPasteSlot('p2')" ondragover="dragOver(event)" ondrop="dropFile(event,'p2')">
+        <input type="file" accept="image/*" id="fileP2" onchange="fileChosen(this,'p2')">
+        <div class="upload-icon">&#9889;</div>
+        <div class="upload-text"><strong>Click to upload</strong>, drag &amp; drop, or paste</div>
+        <div class="upload-hint">Tip: copy an image, click here, then press Ctrl/⌘+V.</div>
+      </div>
+      <div class="upload-actions"><button class="btn-paste" onclick="pasteImg('p2')">Paste from Clipboard</button></div>
+      <div class="preview-block" id="previewP2">
+        <img class="preview-img" id="prevImgP2" src="" alt="">
+        <label class="size-control">Image size
+          <input id="sizeP2" type="range" min="25" max="100" step="5" value="100" oninput="sizeChanged('p2',this.value)">
+          <span class="size-val" id="sizeValP2">100%</span>
+        </label>
+        <div class="preview-footer">
+          <span class="preview-fname" id="prevNameP2"></span>
+          <div class="preview-actions">
+            <button class="btn-copy" onclick="copyImg('p2')">Copy</button>
+            <button class="btn-paste" onclick="pasteImg('p2')">Paste</button>
+            <button class="btn-rm" onclick="removeImg('p2')">Remove</button>
+          </div>
+        </div>
+      </div>
+      <div class="image-slot-title"><span class="slot-num">Image 3</span> of 3</div>
+      <div class="upload-area" tabindex="0" onfocus="setPasteSlot('p3')" onclick="setPasteSlot('p3')" ondragover="dragOver(event)" ondrop="dropFile(event,'p3')">
+        <input type="file" accept="image/*" id="fileP3" onchange="fileChosen(this,'p3')">
+        <div class="upload-icon">&#9889;</div>
+        <div class="upload-text"><strong>Click to upload</strong>, drag &amp; drop, or paste</div>
+        <div class="upload-hint">Tip: copy an image, click here, then press Ctrl/⌘+V.</div>
+      </div>
+      <div class="upload-actions"><button class="btn-paste" onclick="pasteImg('p3')">Paste from Clipboard</button></div>
+      <div class="preview-block" id="previewP3">
+        <img class="preview-img" id="prevImgP3" src="" alt="">
+        <label class="size-control">Image size
+          <input id="sizeP3" type="range" min="25" max="100" step="5" value="100" oninput="sizeChanged('p3',this.value)">
+          <span class="size-val" id="sizeValP3">100%</span>
+        </label>
+        <div class="preview-footer">
+          <span class="preview-fname" id="prevNameP3"></span>
+          <div class="preview-actions">
+            <button class="btn-copy" onclick="copyImg('p3')">Copy</button>
+            <button class="btn-paste" onclick="pasteImg('p3')">Paste</button>
+            <button class="btn-rm" onclick="removeImg('p3')">Remove</button>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="ie-footer">
       <button class="btn-ie-done" onclick="closeImgEditor()">Done</button>
@@ -334,8 +429,8 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
   <div class="modal">
     <div class="m-cat" id="mCat"></div>
     <div class="m-pts" id="mPts"></div>
-    <div class="m-q" id="mQ"></div>
-    <img id="mQImg" class="modal-img q-style" src="" alt="" style="display:none;">
+    <div class="m-q formatted-text" id="mQ"></div>
+    <div id="mQImgs" class="modal-img-stack"></div>
     <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
     <div class="timer-lbl" id="timerLbl">30s</div>
     <div class="btn-row">
@@ -346,12 +441,12 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
     </div>
     <div class="section ans-section" id="ansSection">
       <div class="s-label ans-label">&#10003; Answer</div>
-      <div class="ans-text" id="ansText"></div>
+      <div class="ans-text formatted-text" id="ansText"></div>
     </div>
     <div class="section pearl-section" id="pearlSection">
       <div class="s-label pearl-label">&#9889; Teaching Pearl</div>
-      <div class="pearl-text" id="pearlText"></div>
-      <img id="mPearlImg" class="modal-img pearl-style" src="" alt="" style="display:none;">
+      <div class="pearl-text formatted-text" id="pearlText"></div>
+      <div id="mPearlImgs" class="modal-img-stack"></div>
     </div>
     <div class="score-section" id="scoreSection">
       <div class="score-label">Award points:</div>
@@ -437,6 +532,74 @@ function saveTextStore(){
   try{localStorage.setItem(TEXT_STORE_KEY,JSON.stringify(textStore));}
   catch(err){console.warn('Could not persist text edits:',err);}
 }
+function replaceObjectContents(target,next){
+  Object.keys(target).forEach(key=>delete target[key]);
+  Object.assign(target,next&&typeof next==='object'?next:{});
+}
+function getChangesExport(){
+  return {
+    app:'HemePath Jeopardy',
+    version:1,
+    exportedAt:new Date().toISOString(),
+    textStore,
+    imgStore
+  };
+}
+function exportChanges(){
+  const data=JSON.stringify(getChangesExport(),null,2);
+  const blob=new Blob([data],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const stamp=new Date().toISOString().replace(/[:.]/g,'-');
+  a.href=url;
+  a.download=`hemepath-jeopardy-changes-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function importChangesFromText(raw){
+  const data=JSON.parse(raw);
+  if(!data||typeof data!=='object')throw new Error('Import file is not valid JSON data.');
+  const nextText=data.textStore&&typeof data.textStore==='object'?data.textStore:{cats:{},cells:{}};
+  const nextImg=data.imgStore&&typeof data.imgStore==='object'?data.imgStore:{};
+  localStorage.setItem(TEXT_STORE_KEY,JSON.stringify(nextText));
+  localStorage.setItem(IMG_STORE_KEY,JSON.stringify(nextImg));
+  replaceObjectContents(textStore,nextText);
+  replaceObjectContents(imgStore,nextImg);
+  alert('Changes imported successfully. The game will reload so imported text and images are applied cleanly.');
+  if(window.location&&typeof window.location.reload==='function')window.location.reload();
+}
+function importChangesFile(input){
+  const file=input.files&&input.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{importChangesFromText(String(reader.result||''));}
+    catch(err){alert(`Could not import changes: ${err.message}`);}
+    finally{input.value='';}
+  };
+  reader.onerror=()=>{alert('Could not read the selected import file.');input.value='';};
+  reader.readAsText(file);
+}
+function escapeHtml(value){
+  return String(value??'')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+function formatText(value){
+  return escapeHtml(value)
+    .replace(/\*\*([^*]+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/__([^_]+?)__/g,'<strong>$1</strong>')
+    .replace(/(^|[^*])\*([^*\n]+?)\*/g,'$1<em>$2</em>')
+    .replace(/(^|[^_])_([^_\n]+?)_/g,'$1<em>$2</em>');
+}
+function setFormattedText(id,value){
+  document.getElementById(id).innerHTML=formatText(value);
+}
 function applyTextStore(){
   Object.entries(textStore.cats||{}).forEach(([col,val])=>{if(CATS[col]&&typeof val==='string')CATS[col]=val;});
   Object.entries(textStore.cells||{}).forEach(([key,vals])=>{
@@ -446,12 +609,18 @@ function applyTextStore(){
     ['q','a','p'].forEach(field=>{if(typeof vals[field]==='string')q[field]=vals[field];});
   });
 }
+const IMAGE_SLOTS=['q','q2','p','p2','p3'];
+function getEmbeddedImgData(col,row,slot){
+  const q=QS[col][row];
+  if(slot==='q')return q.qi;
+  if(slot==='p')return q.pi;
+  return '';
+}
 function getImgData(col,row,slot){
   const k=`${col}-${row}`;
   const store=imgStore[k]||{};
   if(store[slot]) return store[slot];
-  const q=QS[col][row];
-  return slot==='q'?q.qi:q.pi;
+  return getEmbeddedImgData(col,row,slot);
 }
 function getImgSize(col,row,slot){
   const store=imgStore[`${col}-${row}`]||{};
@@ -460,15 +629,25 @@ function getImgSize(col,row,slot){
 }
 function imgs(col,row){
   const k=`${col}-${row}`;
-  if(!imgStore[k]) imgStore[k]={q:null,qName:'',qSize:DEFAULT_IMAGE_SIZE,p:null,pName:'',pSize:DEFAULT_IMAGE_SIZE};
-  if(!imgStore[k].qName) imgStore[k].qName='';
-  if(!imgStore[k].pName) imgStore[k].pName='';
-  if(!imgStore[k].qSize) imgStore[k].qSize=DEFAULT_IMAGE_SIZE;
-  if(!imgStore[k].pSize) imgStore[k].pSize=DEFAULT_IMAGE_SIZE;
+  if(!imgStore[k]) imgStore[k]={};
+  IMAGE_SLOTS.forEach(slot=>{
+    if(!Object.prototype.hasOwnProperty.call(imgStore[k],slot)) imgStore[k][slot]=null;
+    if(!imgStore[k][slot+'Name']) imgStore[k][slot+'Name']='';
+    if(!imgStore[k][slot+'Size']) imgStore[k][slot+'Size']=DEFAULT_IMAGE_SIZE;
+  });
   return imgStore[k];
 }
+function getImgSlots(kind){return kind==='q'?['q','q2']:['p','p2','p3'];}
+function getImgList(col,row,kind){
+  return getImgSlots(kind).map(slot=>({
+    slot,
+    src:getImgData(col,row,slot),
+    size:getImgSize(col,row,slot),
+    name:(imgStore[`${col}-${row}`]||{})[slot+'Name']||(getEmbeddedImgData(col,row,slot)?'(embedded)':'')
+  })).filter(img=>!!img.src);
+}
 function hasAnyImg(col,row){
-  return !!(getImgData(col,row,'q')||getImgData(col,row,'p'));
+  return IMAGE_SLOTS.some(slot=>!!getImgData(col,row,slot));
 }
 
 let numTeams=3,teams=[],usedCells=new Set();
@@ -526,11 +705,11 @@ function renderBoard(){
       const key=`${col}-${row}`,pts=(row+1)*100,used=usedCells.has(key);
       const dot=hasAnyImg(col,row)?'<div class="img-badge" title="Image attached"></div>':'';
       if(editMode){
-        const qi=getImgData(col,row,'q');
-        const pi=getImgData(col,row,'p');
+        const qCount=getImgList(col,row,'q').length;
+        const pCount=getImgList(col,row,'p').length;
         const tags=[];
-        if(qi) tags.push('<span style="font-size:.6rem;color:#a5d6a7;">Q</span>');
-        if(pi) tags.push('<span style="font-size:.6rem;color:#64b5f6;">P</span>');
+        if(qCount) tags.push(`<span style="font-size:.6rem;color:#a5d6a7;">Q${qCount>1?'×'+qCount:''}</span>`);
+        if(pCount) tags.push(`<span style="font-size:.6rem;color:#64b5f6;">P${pCount>1?'×'+pCount:''}</span>`);
         b.innerHTML+=`<div class="cell edit-mode" onclick="openImgEditor(${col},${row})">
           ${dot}
           <span class="pts" style="font-size:clamp(1rem,1.8vw,1.4rem);opacity:.7">$${pts}</span>
@@ -547,18 +726,14 @@ function openImgEditor(col,row){
   editCell={col,row};
   const q=QS[col][row];
   const store=imgs(col,row);
-  const qi=getImgData(col,row,'q');
-  const pi=getImgData(col,row,'p');
   document.getElementById('ieTitle').textContent=`${CATS[col]} — $${q.pts}`;
-  document.getElementById('ieQText').textContent=q.q;
+  setFormattedText('ieQText',q.q);
   document.getElementById('editCatText').value=CATS[col];
   document.getElementById('editQText').value=q.q;
   document.getElementById('editAText').value=q.a;
   document.getElementById('editPText').value=q.p;
-  setPreview('Q',qi,store.qName||'(embedded)');
-  setPreview('P',pi,store.pName||'(embedded)');
-  document.getElementById('fileQ').value='';
-  document.getElementById('fileP').value='';
+  IMAGE_SLOTS.forEach(slot=>setPreview(slot.toUpperCase(),getImgData(col,row,slot),store[slot+'Name']||(getEmbeddedImgData(col,row,slot)?'(embedded)':'')));
+  IMAGE_SLOTS.forEach(slot=>{document.getElementById('file'+slot.toUpperCase()).value='';});
   activePasteSlot='q';
   document.getElementById('ieOverlay').classList.add('on');
 }
@@ -575,13 +750,35 @@ function textChanged(field,value){
     const key=`${col}-${row}`;
     if(!textStore.cells[key])textStore.cells[key]={};
     textStore.cells[key][field]=value;
-    if(field==='q')document.getElementById('ieQText').textContent=value;
+    if(field==='q')setFormattedText('ieQText',value);
   }
   saveTextStore();
   renderBoard();
 }
 function applyImageSize(imgEl,size){
   imgEl.style.width=size+'%';
+}
+function updateModalImageLayout(){
+  const modal=document.querySelector('.modal');
+  if(!modal)return;
+  const hasMulti=['mQImgs','mPearlImgs'].some(id=>document.getElementById(id).children.length>1);
+  modal.classList.toggle('wide',hasMulti);
+}
+function renderImageStack(containerId,images,styleClass){
+  const wrap=document.getElementById(containerId);
+  wrap.innerHTML='';
+  wrap.classList.toggle('multi',images.length>1);
+  ['count-2','count-3'].forEach(c=>wrap.classList.remove(c));
+  if(images.length>1)wrap.classList.add(`count-${images.length}`);
+  images.forEach(({src,size,name},idx)=>{
+    const img=document.createElement('img');
+    img.className=`modal-img ${styleClass}`;
+    img.src=src;
+    img.alt=name||`Image ${idx+1}`;
+    applyImageSize(img,size);
+    wrap.appendChild(img);
+  });
+  updateModalImageLayout();
 }
 function updateSizeUI(slot,size){
   const up=slot.toUpperCase();
@@ -686,10 +883,7 @@ async function copyImg(slot){
 function removeImg(slot){
   const d=imgs(editCell.col,editCell.row);
   d[slot]=null;d[slot+'Name']='';d[slot+'Size']=DEFAULT_IMAGE_SIZE;
-  const qi=getImgData(editCell.col,editCell.row,'q');
-  const pi=getImgData(editCell.col,editCell.row,'p');
-  setPreview('Q',qi,'(embedded)');
-  setPreview('P',pi,'(embedded)');
+  setPreview(slot.toUpperCase(),getImgData(editCell.col,editCell.row,slot),getEmbeddedImgData(editCell.col,editCell.row,slot)?'(embedded)':'');
   document.getElementById('file'+slot.toUpperCase()).value='';
   saveImgStore();
 }
@@ -712,17 +906,15 @@ function confirmDD(){
 }
 function showModal(col,row,pts,daily){
   const q=QS[col][row];
-  const qi=getImgData(col,row,'q');
   document.getElementById('mCat').textContent=CATS[col];
   document.getElementById('mPts').textContent=daily?`Daily Double — $${pts} wagered`:`$${pts}`;
-  document.getElementById('mQ').textContent=q.q;
-  const qiEl=document.getElementById('mQImg');
-  qiEl.src=qi||'';qiEl.style.display=qi?'block':'none';applyImageSize(qiEl,getImgSize(col,row,'q'));
+  setFormattedText('mQ',q.q);
+  renderImageStack('mQImgs',getImgList(col,row,'q'),'q-style');
   ['ansSection','pearlSection'].forEach(id=>document.getElementById(id).classList.remove('on'));
   document.getElementById('scoreSection').classList.remove('on');
   document.getElementById('revealBtn').style.display='';
   document.getElementById('pearlBtn').style.display='none';
-  document.getElementById('mPearlImg').src='';document.getElementById('mPearlImg').style.display='none';
+  renderImageStack('mPearlImgs',[],'pearl-style');
   const mo=document.getElementById('modalOverlay');
   mo.classList.add('on');mo.scrollTop=0;
   startTimer(30);
@@ -753,10 +945,10 @@ function openFinalJeopardy(){
   fjWagers=teams.map(()=>0);fjResolved=teams.map(()=>false);
   fjTimer=30;fjTimerRunning=false;
   document.getElementById('fjCategory').textContent=FINAL_JEOPARDY.category;
-  document.getElementById('fjQuestion').textContent=FINAL_JEOPARDY.q;
+  setFormattedText('fjQuestion',FINAL_JEOPARDY.q);
   const fjqi=document.getElementById('fjQImg');
   fjqi.src=FINAL_JEOPARDY.qi||'';fjqi.style.display=FINAL_JEOPARDY.qi?'block':'none';
-  document.getElementById('fjAnswer').textContent=FINAL_JEOPARDY.a;
+  setFormattedText('fjAnswer',FINAL_JEOPARDY.a);
   const fjai=document.getElementById('fjAnsImg');
   fjai.src=FINAL_JEOPARDY.pi||'';fjai.style.display=FINAL_JEOPARDY.pi?'block':'none';
   document.getElementById('fjTimer').textContent='30s';
@@ -837,7 +1029,7 @@ function finalOutcome(i,correct){
 function revealAnswer(){
   clearInterval(timerInterval);timerRunning=false;
   const q=QS[curCell.col][curCell.row];
-  document.getElementById('ansText').textContent=q.a;
+  setFormattedText('ansText',q.a);
   document.getElementById('ansSection').classList.add('on');
   document.getElementById('revealBtn').style.display='none';
   document.getElementById('pearlBtn').style.display='';
@@ -846,10 +1038,8 @@ function revealAnswer(){
 }
 function revealPearl(){
   const q=QS[curCell.col][curCell.row];
-  const pi=getImgData(curCell.col,curCell.row,'p');
-  document.getElementById('pearlText').textContent=q.p;
-  const piEl=document.getElementById('mPearlImg');
-  piEl.src=pi||'';piEl.style.display=pi?'block':'none';applyImageSize(piEl,getImgSize(curCell.col,curCell.row,'p'));
+  setFormattedText('pearlText',q.p);
+  renderImageStack('mPearlImgs',getImgList(curCell.col,curCell.row,'p'),'pearl-style');
   document.getElementById('pearlSection').classList.add('on');
 }
 function renderScoreBtns(){
@@ -877,884 +1067,3 @@ setTeams(3);renderInputs();
 </script>
 </body>
 </html>
-=======
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HemePath Jeopardy!</title>
-<link rel="icon" type="image/svg+xml" href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ctext y=".9em" font-size="90"%3E%F0%9F%A7%AA%3C/text%3E%3C/svg%3E'>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:100vh;overflow-x:hidden;}
-.setup{position:fixed;inset:0;background:#030c1a;z-index:400;display:flex;align-items:center;justify-content:center;padding:20px;}
-.setup-card{background:#0d2451;border:3px solid #c9a227;border-radius:14px;padding:40px 36px;max-width:480px;width:100%;text-align:center;}
-.setup-title{font-family:'Anton',sans-serif;font-size:2.6rem;color:#f5c842;letter-spacing:2px;margin-bottom:4px;}
-.setup-sub{color:#8bb4d8;font-size:.9rem;margin-bottom:28px;}
-.num-label{font-size:.75rem;text-transform:uppercase;letter-spacing:1.5px;color:#8bb4d8;margin-bottom:10px;}
-.num-row{display:flex;gap:10px;justify-content:center;margin-bottom:24px;}
-.num-btn{width:46px;height:46px;border-radius:8px;background:#071428;border:2px solid #1e4080;color:#8bb4d8;font-size:1.1rem;font-weight:700;cursor:pointer;transition:all .15s;}
-.num-btn.sel{background:#c9a227;border-color:#c9a227;color:#030c1a;}
-.team-inputs{display:flex;flex-direction:column;gap:10px;margin-bottom:28px;}
-.trow{display:flex;align-items:center;gap:10px;}
-.tdot{width:14px;height:14px;border-radius:50%;flex-shrink:0;}
-.tinput{flex:1;background:#071428;border:2px solid #1e4080;border-radius:6px;padding:10px 14px;color:white;font-family:'Barlow',sans-serif;font-size:1rem;}
-.tinput:focus{outline:none;border-color:#c9a227;}
-.btn-start{background:#c9a227;color:#030c1a;font-family:'Anton',sans-serif;font-size:1.2rem;letter-spacing:1px;padding:14px 48px;border-radius:8px;border:none;cursor:pointer;transition:all .15s;}
-.btn-start:hover{filter:brightness(1.1);transform:translateY(-2px);}
-.header{text-align:center;padding:14px 20px 8px;background:linear-gradient(180deg,#0d1f3e,#071428);border-bottom:3px solid #c9a227;position:relative;}
-.title{font-family:'Anton',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);color:#f5c842;letter-spacing:2px;}
-.subtitle{color:#8bb4d8;font-size:.85rem;margin-top:2px;letter-spacing:1px;}
-.edit-img-btn{position:absolute;top:50%;right:16px;transform:translateY(-50%);background:#1a3060;border:2px solid #1e4080;border-radius:8px;color:#8bb4d8;font-family:'Barlow',sans-serif;font-size:.78rem;font-weight:700;padding:7px 14px;cursor:pointer;transition:all .2s;white-space:nowrap;}
-.edit-img-btn:hover{border-color:#c9a227;color:#f5c842;}
-.edit-img-btn.active{background:#1a3a08;border-color:#4a8c1a;color:#a5d6a7;}
-.final-btn{position:absolute;top:50%;left:16px;transform:translateY(-50%);background:#3a2a06;border:2px solid #c9a227;border-radius:8px;color:#f5c842;font-family:'Barlow',sans-serif;font-size:.78rem;font-weight:700;padding:7px 14px;cursor:pointer;transition:all .2s;white-space:nowrap;}
-.final-btn:hover{filter:brightness(1.1);}
-.scoreboard{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;padding:10px 16px;background:#071428;}
-.team-card{background:#102040;border:2px solid #1e4080;border-radius:8px;padding:8px 18px;text-align:center;min-width:110px;cursor:pointer;transition:border-color .2s,background .2s;user-select:none;}
-.team-card.active{border-color:#f5c842;background:#1a3060;}
-.tname{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
-.tscore{font-family:'Anton',sans-serif;font-size:1.9rem;color:#f5c842;}
-.tscore.neg{color:#ff6b6b;}
-.edit-banner{display:none;background:#0d200a;border-bottom:2px solid #4a8c1a;padding:8px 16px;text-align:center;font-size:.82rem;color:#a5d6a7;letter-spacing:.3px;}
-.edit-banner.on{display:block;}
-.board-wrap{padding:10px 12px 20px;}
-.board{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;max-width:980px;margin:0 auto;}
-.cat-header{background:#102040;border:2px solid #1e4080;border-radius:6px;padding:10px 6px;text-align:center;font-size:.78rem;font-weight:700;color:#8bb4d8;text-transform:uppercase;letter-spacing:.5px;min-height:64px;display:flex;align-items:center;justify-content:center;line-height:1.3;}
-.cell{background:#0d2870;border:2px solid #1e5090;border-radius:6px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .15s ease;min-height:78px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;position:relative;}
-.cell:hover:not(.used){background:#1540a0;border-color:#4080d0;transform:scale(1.03);}
-.cell.used{background:#071020;border-color:#0a1e30;cursor:default;}
-.cell.edit-mode{background:#0d2010;border-color:#2a5010;}
-.cell.edit-mode:hover{background:#152808 !important;border-color:#4a8c1a !important;transform:scale(1.03);}
-.cell .pts{font-family:'Anton',sans-serif;font-size:clamp(1.4rem,2.5vw,2rem);color:#f5c842;}
-.cell.used .pts{opacity:0;}
-.img-badge{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:#4a8c1a;}
-.dd-overlay{display:none;position:fixed;inset:0;background:rgba(3,12,26,.97);z-index:300;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px;}
-.dd-overlay.on{display:flex;}
-.dd-big{font-family:'Anton',sans-serif;font-size:clamp(4rem,10vw,7rem);color:#f5c842;line-height:1;animation:ddPop .5s cubic-bezier(.34,1.56,.64,1);}
-.dd-who{font-size:1.1rem;color:#8bb4d8;margin:10px 0 20px;}
-.dd-wager{background:#102040;border:2px solid #c9a227;border-radius:8px;padding:12px 18px;font-family:'Anton',sans-serif;font-size:2rem;color:#f5c842;text-align:center;width:200px;margin-bottom:20px;}
-.dd-wager:focus{outline:none;}
-@keyframes ddPop{from{opacity:0;transform:scale(.2);}to{opacity:1;transform:scale(1);}}
-.ie-overlay{display:none;position:fixed;inset:0;background:rgba(3,12,26,.96);z-index:260;align-items:center;justify-content:center;padding:16px;overflow-y:auto;}
-.ie-overlay.on{display:flex;}
-.ie-modal{background:#0d2451;border:3px solid #4a8c1a;border-radius:12px;max-width:720px;width:100%;padding:26px 26px 22px;animation:mIn .2s ease;}
-.ie-header{margin-bottom:20px;}
-.ie-title{font-family:'Anton',sans-serif;font-size:1.5rem;color:#a5d6a7;margin-bottom:4px;}
-.ie-qtext{font-size:.85rem;color:#8bb4d8;line-height:1.5;border-left:3px solid #4a8c1a;padding-left:10px;margin-top:8px;}
-.text-edit{background:#071428;border:2px solid #1e4080;border-radius:8px;padding:16px 18px;margin-bottom:14px;}
-.text-edit-title{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;color:#f5c842;margin-bottom:12px;}
-.text-field{margin-bottom:10px;}
-.text-field:last-child{margin-bottom:0;}
-.text-field label{display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:1.2px;color:#8bb4d8;font-weight:700;margin-bottom:5px;}
-.text-input,.text-area{width:100%;background:#030c1a;border:2px solid #1e4080;border-radius:6px;color:white;font-family:'Barlow',sans-serif;font-size:.9rem;padding:8px 10px;}
-.text-area{min-height:64px;resize:vertical;line-height:1.4;}
-.text-input:focus,.text-area:focus{outline:none;border-color:#c9a227;}
-.ie-slot{background:#071428;border:2px solid #1e4080;border-radius:8px;padding:16px 18px;margin-bottom:14px;}
-.ie-slot-label{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:12px;}
-.slot-q .ie-slot-label{color:#f5c842;}
-.slot-p .ie-slot-label{color:#64b5f6;}
-.upload-area{border:2px dashed #1e4080;border-radius:8px;padding:18px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
-.upload-area:hover{border-color:#4a8c1a;background:#0a1e0a;}
-.upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-.upload-icon{font-size:1.8rem;margin-bottom:6px;}
-.upload-text{font-size:.82rem;color:#8bb4d8;}
-.upload-hint{font-size:.72rem;color:#5f8fbd;margin-top:4px;}
-.upload-text strong{color:#a5d6a7;}
-.preview-block{margin-top:12px;display:none;}
-.preview-block.on{display:block;}
-.preview-img{max-width:100%;max-height:320px;border-radius:6px;border:2px solid #2a6e3e;display:block;margin:0 auto 10px;object-fit:contain;background:#030c1a;}
-.preview-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
-.preview-actions,.upload-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.upload-actions{justify-content:center;margin-top:10px;}
-.size-control{display:flex;align-items:center;gap:10px;margin:10px 0;color:#8bb4d8;font-size:.78rem;}
-.size-control input{flex:1;accent-color:#4a8c1a;}
-.size-val{min-width:42px;text-align:right;color:#a5d6a7;font-weight:700;}
-.btn-paste,.btn-copy{background:#102040;border:1px solid #1e4080;color:#bbdefb;border-radius:6px;padding:5px 12px;font-family:'Barlow',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;}
-.btn-paste:hover,.btn-copy:hover{border-color:#4a8c1a;color:#a5d6a7;}
-.preview-fname{font-size:.75rem;color:#8bb4d8;word-break:break-all;}
-.btn-rm{background:#2a1212;border:1px solid #6b2222;color:#ffaaaa;border-radius:6px;padding:5px 14px;font-family:'Barlow',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;}
-.btn-rm:hover{background:#401818;}
-.ie-footer{display:flex;justify-content:flex-end;margin-top:6px;}
-.btn-ie-done{background:#4a8c1a;color:white;border:none;border-radius:8px;padding:10px 32px;font-family:'Barlow',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;}
-.btn-ie-done:hover{filter:brightness(1.1);}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(3,12,26,.95);z-index:200;overflow-y:auto;padding:16px;}
-.modal-overlay.on{display:flex;align-items:flex-start;justify-content:center;}
-.modal{background:#0d2451;border:3px solid #c9a227;border-radius:12px;max-width:760px;width:100%;padding:28px 28px 24px;animation:mIn .25s ease;}
-@keyframes mIn{from{opacity:0;transform:scale(.95) translateY(-8px);}to{opacity:1;transform:scale(1) translateY(0);}}
-.m-cat{font-size:.72rem;text-transform:uppercase;letter-spacing:2px;color:#8bb4d8;margin-bottom:6px;}
-.m-pts{font-family:'Anton',sans-serif;font-size:2.2rem;color:#f5c842;margin-bottom:16px;}
-.m-q{font-size:1.3rem;font-weight:600;line-height:1.5;color:white;margin-bottom:14px;}
-.modal-img{max-width:100%;max-height:60vh;border-radius:8px;display:block;margin:0 auto 16px;object-fit:contain;background:#030c1a;}
-.modal-img.q-style{border:2px solid #1e4080;}
-.modal-img.ans-style{border:2px solid #2a6e3e;}
-.modal-img.pearl-style{border:2px solid #1e4080;}
-.timer-bar{height:5px;background:#102040;border-radius:3px;margin-bottom:6px;overflow:hidden;}
-.timer-fill{height:100%;background:#f5c842;border-radius:3px;transition:width 1s linear,background .5s;}
-.timer-fill.warn{background:#ff9f43;}
-.timer-fill.danger{background:#ff6b6b;}
-.timer-lbl{font-size:.78rem;color:#8bb4d8;text-align:right;margin-bottom:16px;}
-.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
-.btn{padding:9px 18px;border-radius:6px;border:none;font-family:'Barlow',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .15s;letter-spacing:.3px;}
-.btn:hover{filter:brightness(1.15);transform:translateY(-1px);}
-.btn:active{transform:scale(.97);}
-.btn-reveal{background:#c9a227;color:#030c1a;}
-.btn-pearl{background:#276e3e;color:white;}
-.btn-pause{background:#102040;color:#8bb4d8;border:1px solid #1e4080;}
-.btn-close{background:#3a1212;color:#ffaaaa;border:1px solid #6b2222;}
-.section{display:none;border-radius:8px;padding:14px 18px;margin-bottom:14px;animation:fadeUp .35s ease;}
-.section.on{display:block;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
-.ans-section{background:#071a0e;border:2px solid #2a6e3e;}
-.pearl-section{background:#071428;border:2px solid #1e4080;}
-.s-label{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:700;}
-.ans-label{color:#81c784;}
-.pearl-label{color:#64b5f6;}
-.ans-text{font-size:1.15rem;color:#a5d6a7;font-weight:600;line-height:1.5;margin-bottom:6px;}
-.pearl-text{font-size:.95rem;color:#bbdefb;line-height:1.7;margin-bottom:6px;}
-.score-section{display:none;border-top:1px solid #1e4080;padding-top:14px;}
-.score-section.on{display:block;}
-.score-label{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:#8bb4d8;margin-bottom:10px;font-weight:700;}
-.score-btns{display:flex;gap:8px;flex-wrap:wrap;}
-.btn-cor{background:#122a18;color:#a5d6a7;border:1px solid #2a6e3e;font-size:.8rem;padding:7px 13px;}
-.btn-inc{background:#2a1212;color:#ef9a9a;border:1px solid #6e2a2a;font-size:.8rem;padding:7px 13px;}
-.btn-cor:hover{background:#1e4024;}
-.btn-inc:hover{background:#401818;}
-.btn-cor:disabled,.btn-inc:disabled{opacity:.45;cursor:default;transform:none;}
-.fj-overlay{display:none;position:fixed;inset:0;background:rgba(3,12,26,.97);z-index:350;align-items:center;justify-content:center;padding:16px;overflow-y:auto;}
-.fj-overlay.on{display:flex;}
-.fj-modal{background:#0d2451;border:3px solid #c9a227;border-radius:12px;max-width:760px;width:100%;padding:24px;}
-.fj-head{font-family:'Anton',sans-serif;font-size:1.9rem;color:#f5c842;letter-spacing:1px;margin-bottom:2px;}
-.fj-sub{color:#8bb4d8;font-size:.82rem;margin-bottom:18px;}
-.fj-card{background:#071428;border:2px solid #1e4080;border-radius:8px;padding:14px 16px;margin-bottom:12px;}
-.fj-label{font-size:.72rem;letter-spacing:1.2px;text-transform:uppercase;color:#8bb4d8;margin-bottom:8px;}
-.fj-category{font-family:'Anton',sans-serif;color:#f5c842;font-size:1.5rem;}
-.fj-q{font-size:1.2rem;line-height:1.45;font-weight:600;}
-.fj-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;flex-wrap:wrap;}
-.fj-team{min-width:130px;font-weight:700;}
-.fj-wager{width:170px;background:#071428;border:2px solid #1e4080;border-radius:6px;color:white;padding:8px 10px;font-size:1rem;}
-.fj-wager:focus{outline:none;border-color:#c9a227;}
-.fj-max{font-size:.75rem;color:#8bb4d8;}
-.fj-ctrl{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
-.fj-timer{font-family:'Anton',sans-serif;color:#f5c842;font-size:2rem;margin-top:8px;}
-.fj-answer{font-size:1.1rem;color:#a5d6a7;line-height:1.5;}
-.fj-score-actions{border-top:1px solid #1e4080;padding-top:12px;margin-top:12px;}
-.fj-step{display:none;}
-.fj-step.on{display:block;}
-</style>
-</head>
-<body>
-
-<div class="setup" id="setup">
-  <div class="setup-card">
-    <div class="setup-title">HemePath Jeopardy!</div>
-    <div class="setup-sub">Hematopathology Resident Review</div>
-    <div class="num-label">Number of teams</div>
-    <div class="num-row">
-      <button class="num-btn" onclick="setTeams(2)">2</button>
-      <button class="num-btn sel" onclick="setTeams(3)">3</button>
-      <button class="num-btn" onclick="setTeams(4)">4</button>
-    </div>
-    <div class="team-inputs" id="teamInputs"></div>
-    <button class="btn-start" onclick="startGame()">LET'S PLAY!</button>
-  </div>
-</div>
-
-<div class="dd-overlay" id="ddOverlay">
-  <div class="dd-big">DAILY<br>DOUBLE!</div>
-  <div class="dd-who" id="ddWho"></div>
-  <input class="dd-wager" id="ddWager" type="number" min="0" placeholder="Wager amount">
-  <button class="btn btn-reveal" style="font-size:1rem;padding:12px 32px;" onclick="confirmDD()">CONFIRM WAGER</button>
-</div>
-
-<div id="game" style="display:none;">
-  <div class="header">
-    <button class="final-btn" onclick="openFinalJeopardy()">&#127937; Final Jeopardy</button>
-    <div class="title">HemePath Jeopardy!</div>
-    <div class="subtitle">Hematopathology Resident Review &mdash; click a team card to select active team</div>
-    <button class="edit-img-btn" id="editImgBtn" onclick="toggleEditMode()">&#128247; Edit Images</button>
-  </div>
-  <div class="scoreboard" id="scoreboard"></div>
-  <div class="edit-banner" id="editBanner">&#128247; Image Edit Mode &mdash; click any cell to add or remove images. Green dot = image attached. Click &ldquo;Done Editing&rdquo; when finished.</div>
-  <div class="board-wrap"><div class="board" id="board"></div></div>
-</div>
-
-<div class="fj-overlay" id="fjOverlay">
-  <div class="fj-modal">
-    <div class="fj-head">Final Jeopardy</div>
-    <div class="fj-sub">All teams wager privately, then answer one final clue.</div>
-    <div class="fj-step on" id="fjStepWager">
-      <div class="fj-card">
-        <div class="fj-label">Category</div>
-        <div class="fj-category" id="fjCategory"></div>
-      </div>
-      <div class="fj-card">
-        <div class="fj-label">Enter Wagers</div>
-        <div id="fjWagerRows"></div>
-      </div>
-      <div class="fj-ctrl">
-        <button class="btn btn-reveal" onclick="lockFinalWagers()">Lock Wagers</button>
-        <button class="btn btn-close" onclick="closeFinalJeopardy()">Close</button>
-      </div>
-    </div>
-    <div class="fj-step" id="fjStepQuestion">
-      <div class="fj-card">
-        <div class="fj-label">Final Jeopardy Clue</div>
-        <div class="fj-q" id="fjQuestion"></div>
-        <img id="fjQImg" style="max-width:100%;max-height:300px;border-radius:8px;display:none;margin:12px auto 0;border:2px solid #1e4080;object-fit:contain;background:#030c1a;">
-        <div class="fj-timer" id="fjTimer">30s</div>
-      </div>
-      <div class="fj-ctrl">
-        <button class="btn btn-pause" id="fjPauseBtn" onclick="toggleFinalTimer()">Pause</button>
-        <button class="btn btn-reveal" onclick="revealFinalAnswer()">Reveal Answer</button>
-      </div>
-    </div>
-    <div class="fj-step" id="fjStepAnswer">
-      <div class="fj-card">
-        <div class="fj-label">Correct Response</div>
-        <div class="fj-answer" id="fjAnswer"></div>
-        <img id="fjAnsImg" style="max-width:100%;max-height:300px;border-radius:8px;display:none;margin:12px auto 0;border:2px solid #2a6e3e;object-fit:contain;background:#030c1a;">
-      </div>
-      <div class="fj-score-actions">
-        <div class="fj-label">Score each team</div>
-        <div id="fjScoreRows"></div>
-      </div>
-      <div class="fj-ctrl">
-        <button class="btn btn-close" onclick="closeFinalJeopardy()">Done</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="ie-overlay" id="ieOverlay">
-  <div class="ie-modal">
-    <div class="ie-header">
-      <div class="ie-title" id="ieTitle">Edit Images</div>
-      <div class="ie-qtext" id="ieQText"></div>
-    </div>
-    <div class="text-edit">
-      <div class="text-edit-title">Quick Text Edits</div>
-      <div class="text-field">
-        <label for="editCatText">Category</label>
-        <input class="text-input" id="editCatText" type="text" oninput="textChanged('cat',this.value)">
-      </div>
-      <div class="text-field">
-        <label for="editQText">Question</label>
-        <textarea class="text-area" id="editQText" oninput="textChanged('q',this.value)"></textarea>
-      </div>
-      <div class="text-field">
-        <label for="editAText">Answer</label>
-        <textarea class="text-area" id="editAText" oninput="textChanged('a',this.value)"></textarea>
-      </div>
-      <div class="text-field">
-        <label for="editPText">Teaching Pearl</label>
-        <textarea class="text-area" id="editPText" oninput="textChanged('p',this.value)"></textarea>
-      </div>
-    </div>
-    <div class="ie-slot slot-q">
-      <div class="ie-slot-label">Question Image &mdash; shown when question is opened</div>
-      <div class="upload-area" tabindex="0" onfocus="setPasteSlot('q')" onclick="setPasteSlot('q')" ondragover="dragOver(event)" ondrop="dropFile(event,'q')">
-        <input type="file" accept="image/*" id="fileQ" onchange="fileChosen(this,'q')">
-        <div class="upload-icon">&#128300;</div>
-        <div class="upload-text"><strong>Click to upload</strong>, drag &amp; drop, or paste</div>
-        <div class="upload-hint">Tip: copy an image, click here, then press Ctrl/⌘+V.</div>
-      </div>
-      <div class="upload-actions"><button class="btn-paste" onclick="pasteImg('q')">Paste from Clipboard</button></div>
-      <div class="preview-block" id="previewQ">
-        <img class="preview-img" id="prevImgQ" src="" alt="">
-        <label class="size-control">Image size
-          <input id="sizeQ" type="range" min="25" max="100" step="5" value="100" oninput="sizeChanged('q',this.value)">
-          <span class="size-val" id="sizeValQ">100%</span>
-        </label>
-        <div class="preview-footer">
-          <span class="preview-fname" id="prevNameQ"></span>
-          <div class="preview-actions">
-            <button class="btn-copy" onclick="copyImg('q')">Copy</button>
-            <button class="btn-paste" onclick="pasteImg('q')">Paste</button>
-            <button class="btn-rm" onclick="removeImg('q')">Remove</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="ie-slot slot-p">
-      <div class="ie-slot-label">Teaching Pearl Image &mdash; revealed with the pearl</div>
-      <div class="upload-area" tabindex="0" onfocus="setPasteSlot('p')" onclick="setPasteSlot('p')" ondragover="dragOver(event)" ondrop="dropFile(event,'p')">
-        <input type="file" accept="image/*" id="fileP" onchange="fileChosen(this,'p')">
-        <div class="upload-icon">&#9889;</div>
-        <div class="upload-text"><strong>Click to upload</strong>, drag &amp; drop, or paste</div>
-        <div class="upload-hint">Tip: copy an image, click here, then press Ctrl/⌘+V.</div>
-      </div>
-      <div class="upload-actions"><button class="btn-paste" onclick="pasteImg('p')">Paste from Clipboard</button></div>
-      <div class="preview-block" id="previewP">
-        <img class="preview-img" id="prevImgP" src="" alt="">
-        <label class="size-control">Image size
-          <input id="sizeP" type="range" min="25" max="100" step="5" value="100" oninput="sizeChanged('p',this.value)">
-          <span class="size-val" id="sizeValP">100%</span>
-        </label>
-        <div class="preview-footer">
-          <span class="preview-fname" id="prevNameP"></span>
-          <div class="preview-actions">
-            <button class="btn-copy" onclick="copyImg('p')">Copy</button>
-            <button class="btn-paste" onclick="pasteImg('p')">Paste</button>
-            <button class="btn-rm" onclick="removeImg('p')">Remove</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="ie-footer">
-      <button class="btn-ie-done" onclick="closeImgEditor()">Done</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <div class="m-cat" id="mCat"></div>
-    <div class="m-pts" id="mPts"></div>
-    <div class="m-q" id="mQ"></div>
-    <img id="mQImg" class="modal-img q-style" src="" alt="" style="display:none;">
-    <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
-    <div class="timer-lbl" id="timerLbl">30s</div>
-    <div class="btn-row">
-      <button class="btn btn-reveal" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
-      <button class="btn btn-pearl" id="pearlBtn" onclick="revealPearl()" style="display:none;">Teaching Pearl</button>
-      <button class="btn btn-pause" id="pauseBtn" onclick="togglePause()">Pause</button>
-      <button class="btn btn-close" onclick="closeModal()">Close</button>
-    </div>
-    <div class="section ans-section" id="ansSection">
-      <div class="s-label ans-label">&#10003; Answer</div>
-      <div class="ans-text" id="ansText"></div>
-    </div>
-    <div class="section pearl-section" id="pearlSection">
-      <div class="s-label pearl-label">&#9889; Teaching Pearl</div>
-      <div class="pearl-text" id="pearlText"></div>
-      <img id="mPearlImg" class="modal-img pearl-style" src="" alt="" style="display:none;">
-    </div>
-    <div class="score-section" id="scoreSection">
-      <div class="score-label">Award points:</div>
-      <div class="score-btns" id="scoreBtns"></div>
-    </div>
-  </div>
-</div>
-
-<script>
-const COLORS=['#f5c842','#4fc3f7','#a5d6a7','#ff8a80'];
-const DOTS  =['#c9a227','#0288d1','#388e3c','#c62828'];
-const CATS  =['Morphology Madness','Flow Frenzy','Mutation Station','Classify This!','Clinical Correlates'];
-
-const QS=[
-[
-{q:"What peripheral smear finding is pathognomonic for this entity? And what is the IMMEDIATE treatment?",a:"Auer rods (bundle = APL/M3 = DIC emergency)",p:"Auer rods are crystallized azurophilic granules in myeloblasts. Single rods → AML. Bundle-forming 'faggot cells' are specific to APL — signaling a DIC emergency. ATRA must be started immediately upon clinical suspicion; do NOT wait for cytogenetics. The DIC of APL can be rapidly fatal without treatment.",pts:100,qi:"docs/images/auer-rod-2.webp",pi:""},
-{q:"These fragile lymphocytes rupture during peripheral smear preparation and are a hallmark finding in which B-cell malignancy?",a:"Smudge cells → Chronic Lymphocytic Leukemia (CLL)",p:"Smudge cells reflect the mechanical fragility of CLL lymphocytes. Adding albumin before smear prep reduces smudging (used to confirm CLL diagnosis). >30% smudge cells is strongly suggestive. Smudge cells are NOT counted in the WBC differential. The 'Tweed smear' using albumin is the confirmatory test.",pts:200,qi:"",pi:""},
-{q:"Peripheral blood flow cytometry reveals an expanded CD4+ T-cell population with loss of CD7 and CD26, a CD4:CD8 ratio of 15:1, and over 1,000 malignant cells per µL. Name the hallmark nuclear morphology of the circulating malignant cells.",a:"Cerebriform (grooved/convoluted) nuclei — Sézary cells",p:"Sézary syndrome is the leukemic phase of cutaneous T-cell lymphoma, defined by the triad of erythroderma, lymphadenopathy, and circulating malignant CD4+ T-cells with cerebriform nuclei. Diagnostic criteria: Sézary cells >1,000/µL, CD4:CD8 ratio >10:1, or loss of CD7 or CD26 on CD4+ T-cells (CD26 loss most specific). Skin biopsy shows epidermotropism with Pautrier microabscesses. Prognosis poor: median survival 2–4 years.",pts:300,qi:"",pi:""},
-{q:"A bone marrow biopsy demonstrates a hypercellular (80%) bone marrow with erythroid hyperplasia. No significant dysplastic features in myeloid or megakaryocytic lineages. No increase in marrow blasts. An iron stain of the bone marrow aspirate is shown. Chromosome analysis showed 46,XX[20]. Alteration in which gene is commonly associated with this disorder?",a:"SF3B1. Case of MDS with low blasts and SF3B1 mutation",p:"MDS-SF3B1 is morphologically characterized by erythroid dysplasia and ring sideroblasts. Somatic mutations of spliceosome gene SF3B1 are seen in ~17% of MDS. WHO 2022 diagnosis: cytopenia, erythroid dysplasia, blasts <5% marrow/<2% blood, SF3B1 mutation. No 5q deletion, monosomy 7/7q, biallelic TP53, or complex karyotype. Biallelic TP53 inactivation is a defining genetic abnormality in MDS often associated with increased blasts.",pts:400,qi:"",pi:""},
-{q:"The cell shown is CD30+, ALK+, and EMA+. Its parent neoplasm arises most commonly in the first three decades of life, carries t(2;5) in the majority of cases, and has a 5-year survival of ~80% — nearly double that of its ALK-negative counterpart.",a:"Hallmark Cells of ALK+ Anaplastic Large Cell Lymphoma (ALCL)",p:"ALK+ ALCL is the most common aggressive T-cell lymphoma in children and young adults. The hallmark cell: large, horseshoe/wreath-shaped nucleus with eosinophilic paranuclear Golgi zone — pathognomonic. Immunophenotype: CD30+ (strong, uniform), ALK+, EMA+, CD15−. t(2;5)(p23;q35) fuses ALK with NPM1 → nuclear + cytoplasmic ALK staining. DUSP22 and TP63 rearrangements seen in ALK− ALCL only.",pts:500,qi:"",pi:""},
-],
-[
-{q:"Name 3 of the classic 5-marker immunophenotype that defines CLL on flow cytometry.",a:"CD5+, CD23+, CD19+, CD20 dim, FMC7 negative",p:"CLL hallmark = CD5/CD23 co-expression. CD20 is characteristically DIM (vs. mantle cell, which is bright). Matutes score ≥4/5 confirms CLL. ZAP-70, CD38, and IGHV mutation status provide prognostic info. CD38+ and ZAP-70+ correlate with unmutated IGHV and worse prognosis.",pts:100,qi:"",pi:""},
-{q:"Hairy Cell Leukemia has 'quad positivity' on flow cytometry. Name 3 of the 4 markers. (Bonus: name the key mutation!)",a:"CD103, CD11c, CD25, CD20; BRAF V600E!",p:"HCL quad positivity on flow: CD103 + CD11c + CD25 + CD20. IHC also CD123, ANXA1, and TBX21 positive. BRAF V600E in ~95%. HCL-variant: CD25-negative, BRAF wild-type — different biology and treatment. Cladribine (2-CdA) is curative in most classic HCL. Bone marrow shows 'fried egg' pattern with clear cytoplasm.",pts:200,qi:"",pi:""},
-{q:"Most likely diagnosis?",a:"Mantle Cell Lymphoma",p:"MCL is an aggressive B-cell lymphoma defined by t(11;14) driving Cyclin D1 overexpression, presenting in older men with advanced stage disease. Immunophenotype: CD5+, CD20+ bright, FMC7+, Cyclin D1+, SOX11+, CD23−, CD10−, BCL6−. Indolent leukemic non-nodal MCL: SOX11−, IGHV mutated — watch and wait appropriate. Blastoid/pleomorphic: TP53 mutated, worst prognosis.",pts:300,qi:"",pi:""},
-{q:"Compared to normal plasma cells, the majority of myeloma plasma cells aberrantly LOSE which common B-cell antigen and GAIN which marker not normally expressed on plasma cells? (see image)",a:"Lose CD19 and CD45 (dim/negative); gain aberrant CD56",p:"Normal PCs: CD138+, CD38+, CD19+, CD45+, CD56−. Myeloma PCs: CD138+, CD38+, CD19−, CD45 dim/neg, CD56+. CD56 on PCs is aberrant and diagnostic — a neural/NK cell adhesion molecule not normally on plasma cells. CD45 loss correlates with poorer prognosis and worse response to chemotherapy. MRD by flow requires >6-color panels.",pts:400,qi:"",pi:""},
-{q:"22-year-old man presents with chest pain, pancreatic and liver masses, elevated LDH, anemia, and thrombocytopenia. Bone marrow aspirate and flow cytometry are shown. What is the diagnosis?",a:"B-lymphoblastic leukemia/lymphoma (B-ALL)",p:"Bone marrow aspirate shows intermediate-sized blastic cells with high N:C ratio, dispersed chromatin, and small nucleoli. Flow: CD19+, CD10 bright, CD34+, decreased CD45; no myeloid markers (CD13, CD33, CD117). BL, FL, and DLBCL express CD10 but lack CD34 and have higher CD45. MCL has CD5 without CD10. These features are consistent with B-ALL.",pts:500,qi:"",pi:""},
-],
-[
-{q:"This fusion oncogene, created by t(9;22), defines this entity and is the target of imatinib and second-generation tyrosine kinase inhibitors.",a:"BCR-ABL1 — Chronic Myeloid Leukemia (CML)",p:"BCR-ABL creates a constitutively active tyrosine kinase. Imatinib was the first targeted cancer therapy and revolutionized CML treatment. 2nd gen (dasatinib, nilotinib) and 3rd gen (ponatinib, asciminib) used for resistance. The T315I 'gatekeeper' mutation is resistant to all except ponatinib and asciminib. Monitor by BCR-ABL PCR (major molecular response = goal).",pts:100,qi:"",pi:""},
-{q:"This point mutation is present in greater than 95% of Polycythemia Vera cases and in approximately 50% of Essential Thrombocythemia and Primary Myelofibrosis cases.",a:"JAK2 V617F",p:"JAK2 V617F (exon 14) = gain of function → constitutive JAK-STAT signaling. In JAK2-negative PV, check JAK2 exon 12. In JAK2-negative ET/PMF, test CALR (exon 8/9) first, then MPL (W515). Ruxolitinib (JAK1/2 inhibitor) is key therapy for high-risk MF and PV. When JAK2 V617F negative in ET or PMF: CALR mutation (~25%), MPL mutation (~5%), Triple negative (worst prognosis).",pts:200,qi:"",pi:""},
-{q:"This AML-defining fusion, caused by inv(16)/t(16;16), has characteristic histologic features shown here on Giemsa stain and can be diagnosed regardless of blast count.",a:"CBFB::MYH11 fusion (AML with inv(16)/t(16;16))",p:"AML with CBFB::MYH11, caused by inv(16)(p13.1q22) or t(16;16)(p13.1;q22), is a core-binding factor AML diagnosed at any blast count. The fusion disrupts RUNX1/CBFβ transcription, driving abnormal myeloid differentiation. The morphologic hallmark is abnormal eosinophils with large dark purple-violet granules on Romanowsky stain, present in the majority of cases.",pts:300,qi:"",pi:""},
-{q:"The Hans algorithm classifies DLBCL into GCB and non-GCB subtypes using CD10, BCL6, and MUM1. A CD10−, BCL6+, MUM1+ profile classifies which subtype?",a:"Non-GCB (activated B-cell, ABC) DLBCL",p:"Hans algorithm separates DLBCL into GCB and non-GCB (ABC) — ABC-DLBCL has worse outcomes with R-CHOP. GCB: BCL2 rearrangement t(14;18), EZH2 mutation, PTEN loss. ABC/non-GCB: MYD88 L265P, CD79B mutation, NF-κB pathway activation. Double-hit (MYC + BCL2 or BCL6): nearly always GCB. One-liner: CD10+ or CD10−/BCL6+/MUM1− = GCB. Everything else = non-GCB. MYD88 + CD79B = ABC.",pts:400,qi:"",pi:""},
-{q:"The image shown is the histologic hallmark of this life-threatening hyperinflammatory syndrome, driven by loss-of-function mutations in THIS GENE encoding a pore-forming cytotoxic protein, resulting in uncontrolled hypercytokinemia.",a:"PRF1 — perforin (Hemophagocytic Lymphohistiocytosis, HLH)",p:"HLH is a hyperinflammatory syndrome caused by failure of cytotoxic lymphocytes to terminate activated macrophages. Familial HLH most commonly caused by PRF1 mutations. HLH-2004 criteria — 5 of 8: Fever, splenomegaly, cytopenias (≥2 lines), hypertriglyceridemia/hypofibrinogenemia, hemophagocytosis, low/absent NK activity, ferritin ≥500, elevated sIL-2R. Ferritin >10,000 highly specific. Treat empirically — don't wait for biopsy.",pts:500,qi:"",pi:""},
-],
-[
-{q:"Aggressive B-cell lymphoma with 'starry sky' pattern, t(8;14), and Ki-67 near 100%. What is the diagnosis?",a:"Burkitt Lymphoma",p:"t(8;14) = MYC/IGH translocation. 'Starry sky' = tingible body macrophages engulfing apoptotic tumor cells. Three forms: endemic (EBV+, jaw mass in children), sporadic (abdominal in adults), immunodeficiency-associated. Ki-67 ~100% is characteristic. Standard R-CHOP is INSUFFICIENT — use R-CODOX-M/IVAC or DA-EPOCH-R. No concurrent BCL2/BCL6 rearrangements (those point to DLBCL).",pts:100,qi:"",pi:""},
-{q:"This lymphoma has an immunoprofile of CD30+, CD15+, CD45−, and PAX5 dim, with characteristic cells shown below.",a:"Classical Hodgkin Lymphoma",p:"'Owl-eye' = large prominent eosinophilic nucleoli in binucleated Reed-Sternberg cells. RS cells derived from germinal center B cells that lost B-cell programming. CD30 is the target of brentuximab vedotin (anti-CD30 ADC). NLPHL popcorn cells are CD20+, CD45+, CD15−, CD30− — entirely different biology. Classic RS cells are CD20-negative. Background inflammatory cells are key to subtype classification.",pts:200,qi:"",pi:""},
-{q:"Mantle Cell Lymphoma is defined by what translocation AND what protein?",a:"t(11;14) → Cyclin D1 overexpression",p:"MCL: CD5+, CD23−, FMC7+, Cyclin D1+, SOX11+ (most). Indolent leukemic non-nodal MCL: SOX11−, CD23 variable, IGHV mutated. Blastoid/pleomorphic = most aggressive (blastoid resembles ALL). BTK inhibitors (ibrutinib, acalabrutinib, zanubrutinib) are key treatments. Cyclin D1-negative MCL exists (CCND2 rearrangement) — use SOX11 to confirm.",pts:300,qi:"",pi:""},
-{q:"This diagnosis requires a persistent peripheral blood monocyte count of at least 0.5 × 10⁹/L (comprising ≥10% of white cells), blasts under 20% in blood and marrow, and exclusion of CML, other MPNs, and myeloid/lymphoid neoplasms with tyrosine kinase gene fusions.",a:"Chronic Myelomonocytic Leukemia (CMML)",p:"CMML is a crossover MDS/MPN. Myelodysplastic CMML: WBC <13 × 10⁹/L. Myeloproliferative CMML: WBC ≥13 × 10⁹/L. Common mutations: TET2, SRSF2, ASXL1, RAS pathway. Transformation to AML in ~15–30%. Hypomethylating agents (azacitidine, decitabine) are standard therapy. Allogeneic SCT is the only potentially curative option.",pts:400,qi:"",pi:""},
-{q:"A 72-year-old man presents with widespread violaceous skin nodules followed by rapid bone marrow and peripheral blood involvement. Biopsy shows blastic cells that are TCF4+, CD123+, and CD303+ but negative for CD3, MPO, CD34. Cytogenetics reveals a complex karyotype.",a:"Blastic Plasmacytoid Dendritic Cell Neoplasm (BPDCN)",p:"BPDCN is an aggressive plasmacytoid dendritic cell neoplasm classically presenting in elderly men with violaceous skin nodules rapidly progressing to bone marrow involvement. Key features: CD123+, CD4+, CD56+, CD303+, TCF4+ — CD3−, CD19−, MPO−, CD34−. No defining cytogenetic abnormality; TET2, ASXL1, RAS mutations common. Associated with MDS and CMML. Treatment: Tagraxofusp (CD123-targeted cytotoxin). One-liner: Violaceous skin + elderly man + CD123+/CD4+/CD56+/lineage negative = BPDCN.",pts:500,qi:"",pi:""},
-],
-[
-{q:"Young man presents with a painless enlarged cervical lymph node. Biopsy shows a nodular proliferation with cells shown, positive for CD20, PAX5, and CD45, negative for CD30 and CD15, with CD57+ T-cell rosettes surrounding the large atypical cells.",a:"Nodular Lymphocyte Predominant Hodgkin Lymphoma (NLPHL)",p:"LP 'popcorn' cells retain a full germinal center B-cell program — CD20+, PAX5 strong, OCT2+, BOB1+, BCL6+ — unlike Reed-Sternberg cells which lose B-cell identity. CD30−/CD15− is the key discriminator from cHL on boards. CD57+ and PD1+ T-cell rosettes surrounding LP cells are a hallmark. PTGC may precede or follow NLPHL. Risk of transformation to DLBCL or TCHRLBCL. Mediastinal involvement is rare — if present, think Classical HL.",pts:100,qi:"",pi:""},
-{q:"This benign disease is typically found in young adult males with cervical lymphadenopathy, fever, and leukopenia. Lymph node biopsy shows crescentic histiocytes with a necrotizing lymphadenitis. No neutrophils or eosinophils. Negative ANA.",a:"Kikuchi Disease (Kikuchi-Fujimoto Disease)",p:"Lymph node shows irregularly shaped pale areas with histiocytes, plasmacytoid dendritic cells, eosinophilic granular material, and abundant karyorrhectic debris surrounding central necrosis. Crescentic histiocytes with crescent-shaped nuclei are characteristic. Three stages: Proliferative, Necrotizing, Xanthomatous. Self-limiting — most resolve in 1–4 months. Exclude SLE (can look identical histologically).",pts:200,qi:"",pi:""},
-{q:"45-year-old woman with longstanding celiac disease presents with recurrent abdominal pain, weight loss, and fever despite strict adherence to a gluten-free diet. CT shows a jejunal mass with mesenteric lymphadenopathy. Biopsy: atypical intraepithelial T-cell proliferation with CD3+, CD8+, CD56− immunophenotype and high Ki-67.",a:"Enteropathy-Associated T-Cell Lymphoma (EATL)",p:"EATL is a rare but aggressive intestinal T-cell lymphoma arising almost exclusively in celiac disease (~80% of intestinal T-cell lymphomas in Western populations). Immunophenotype: CD3+, CD7+, CD8+ (variable), CD56−, TCRαβ+. Background mucosa shows villous atrophy. EATL vs MEITL: Celiac = EATL yes, MEITL no. CD56: EATL negative, MEITL positive. CD56 is the fastest boards discriminator. Prognosis poor — median survival under 2 years.",pts:300,qi:"",pi:""},
-{q:"A 68-year-old man presents with blurry vision, headache, and epistaxis. Fundoscopy reveals 'sausage-link' retinal veins. Serum protein electrophoresis shows a monoclonal IgM spike. Bone marrow biopsy demonstrates a lymphoplasmacytic infiltrate harboring THIS MUTATION present in ~90% of cases.",a:"MYD88 L265P mutation — Waldenström Macroglobulinemia (IgM, pentameric ~900kDa)",p:"WM is a lymphoplasmacytic lymphoma defined by IgM paraproteinemia and bone marrow involvement. IgM pentamers (~900 kDa) are far more viscogenic than IgG/IgA. Classic hyperviscosity triad: visual changes, neurologic symptoms, mucosal bleeding. MYD88 L265P — ~90% of WM; activates NF-κB. CXCR4 mutations ~40% — associated with reduced ibrutinib response. Acute crisis: plasmapheresis first. Rituximab flare — IgM can spike acutely before it falls.",pts:400,qi:"",pi:""},
-{q:"45-year-old man of East Asian descent presents with a destructive mid-facial mass and epistaxis. Biopsy shows medium to large tumor cells with diffuse growth pattern and areas of necrosis with angiodestruction. IHC shows diffuse overexpression of this immune checkpoint ligand on tumor cells, making it a therapeutic target.",a:"PD-L1 (CD274) — Extranodal NK/T-cell Lymphoma, Nasal Type",p:"Extranodal NK/T-cell lymphoma is an aggressive EBV-driven lymphoma with predilection for East Asian and Latin American populations. EBER in situ hybridization is universally positive; plasma EBV viral load monitors treatment and relapse. Immunophenotype: CD2+, cytoplasmic CD3ε+, surface CD3−, CD56+, granzyme B+, TIA-1+. Chromosome 6q deletions silence PRDM1 and FOXO3. JAK-STAT activation + PD-L1 overexpression drive immune evasion. One-liner: Midfacial mass + angiodestruction + CD56+ + EBER+ = NK/T-cell lymphoma.",pts:500,qi:"",pi:""},
-],
-];
-const FJ_QI="";
-
-const FJ_PI="";
-
-
-const FINAL_JEOPARDY={
-  category:'Bone Marrow Showdown',
-  q:'A 67-year-old immunosuppressed woman (lung transplant 8 years prior) presents with progressive dyspnea and normocytic anemia (Hgb 6.9), very low reticulocyte count, normal WBC and platelets. Bone marrow aspirate is shown. What is the diagnosis and treatment?',
-  a:'Parvovirus B19 infection — treated with red-cell transfusions and IVIG. Giant proerythroblasts with basophilic/vacuolated cytoplasm, uncondensed chromatin, and large intranuclear purple viral inclusions are the hallmark.',
-  qi:FJ_QI,
-  pi:FJ_PI
-};
-
-const IMG_STORE_KEY='hemeJeopardy.imageStore.v2';
-const TEXT_STORE_KEY='hemeJeopardy.textStore.v1';
-const DEFAULT_IMAGE_SIZE=100;
-const imgStore=loadImgStore();
-const textStore=loadTextStore();
-applyTextStore();
-function loadImgStore(){
-  try{const raw=localStorage.getItem(IMG_STORE_KEY);if(!raw)return{};const p=JSON.parse(raw);return p&&typeof p==='object'?p:{};}
-  catch(_){return{};}
-}
-function saveImgStore(){
-  try{localStorage.setItem(IMG_STORE_KEY,JSON.stringify(imgStore));}
-  catch(err){console.warn('Could not persist image store:',err);}
-}
-function loadTextStore(){
-  try{const raw=localStorage.getItem(TEXT_STORE_KEY);if(!raw)return{cats:{},cells:{}};const p=JSON.parse(raw);return p&&typeof p==='object'?{cats:p.cats||{},cells:p.cells||{}}:{cats:{},cells:{}};}
-  catch(_){return{cats:{},cells:{}};}
-}
-function saveTextStore(){
-  try{localStorage.setItem(TEXT_STORE_KEY,JSON.stringify(textStore));}
-  catch(err){console.warn('Could not persist text edits:',err);}
-}
-function applyTextStore(){
-  Object.entries(textStore.cats||{}).forEach(([col,val])=>{if(CATS[col]&&typeof val==='string')CATS[col]=val;});
-  Object.entries(textStore.cells||{}).forEach(([key,vals])=>{
-    const [col,row]=key.split('-').map(Number);
-    const q=QS[col]&&QS[col][row];
-    if(!q||!vals)return;
-    ['q','a','p'].forEach(field=>{if(typeof vals[field]==='string')q[field]=vals[field];});
-  });
-}
-function getImgData(col,row,slot){
-  const k=`${col}-${row}`;
-  const store=imgStore[k]||{};
-  if(store[slot]) return store[slot];
-  const q=QS[col][row];
-  return slot==='q'?q.qi:q.pi;
-}
-function getImgSize(col,row,slot){
-  const store=imgStore[`${col}-${row}`]||{};
-  const size=Number(store[slot+'Size']);
-  return Number.isFinite(size)?Math.min(100,Math.max(25,size)):DEFAULT_IMAGE_SIZE;
-}
-function imgs(col,row){
-  const k=`${col}-${row}`;
-  if(!imgStore[k]) imgStore[k]={q:null,qName:'',qSize:DEFAULT_IMAGE_SIZE,p:null,pName:'',pSize:DEFAULT_IMAGE_SIZE};
-  if(!imgStore[k].qName) imgStore[k].qName='';
-  if(!imgStore[k].pName) imgStore[k].pName='';
-  if(!imgStore[k].qSize) imgStore[k].qSize=DEFAULT_IMAGE_SIZE;
-  if(!imgStore[k].pSize) imgStore[k].pSize=DEFAULT_IMAGE_SIZE;
-  return imgStore[k];
-}
-function hasAnyImg(col,row){
-  return !!(getImgData(col,row,'q')||getImgData(col,row,'p'));
-}
-
-let numTeams=3,teams=[],usedCells=new Set();
-let activeTeam=0,curCell=null,curPts=0,isDD=false,ddWager=0;
-let timerLeft=30,timerRunning=false,timerInterval=null;
-let activePasteSlot='q',copiedImage=null;
-let editMode=false,editCell=null;
-let fjWagers=[],fjResolved=[],fjTimer=30,fjTimerRunning=false,fjTimerInterval=null;
-
-const ddSet=new Set();
-while(ddSet.size<2){ddSet.add(`${Math.floor(Math.random()*5)}-${Math.floor(Math.random()*5)}`);}
-
-function setTeams(n){
-  numTeams=n;
-  document.querySelectorAll('.num-btn').forEach((b,i)=>b.classList.toggle('sel',i+2===n));
-  renderInputs();
-}
-function renderInputs(){
-  const names=['Team 1','Team 2','Team 3','Team 4'];
-  document.getElementById('teamInputs').innerHTML=Array.from({length:numTeams},(_,i)=>`
-    <div class="trow">
-      <div class="tdot" style="background:${DOTS[i]}"></div>
-      <input class="tinput" id="tn${i}" value="${names[i]}">
-    </div>`).join('');
-}
-function startGame(){
-  teams=Array.from({length:numTeams},(_,i)=>({
-    name:document.getElementById(`tn${i}`).value.trim()||`Team ${i+1}`,
-    score:0,color:COLORS[i]
-  }));
-  document.getElementById('setup').style.display='none';
-  document.getElementById('game').style.display='block';
-  renderSB();renderBoard();
-}
-function renderSB(){
-  document.getElementById('scoreboard').innerHTML=teams.map((t,i)=>`
-    <div class="team-card${i===activeTeam?' active':''}" onclick="activeTeam=${i};renderSB()">
-      <div class="tname" style="color:${t.color}">${t.name}</div>
-      <div class="tscore${t.score<0?' neg':''}">${t.score<0?'-':''}$${Math.abs(t.score)}</div>
-    </div>`).join('');
-}
-function toggleEditMode(){
-  editMode=!editMode;
-  const btn=document.getElementById('editImgBtn');
-  btn.textContent=editMode?'Done Editing':'Edit Images';
-  btn.classList.toggle('active',editMode);
-  document.getElementById('editBanner').classList.toggle('on',editMode);
-  renderBoard();
-}
-function renderBoard(){
-  const b=document.getElementById('board');
-  b.innerHTML=CATS.map(c=>`<div class="cat-header">${c}</div>`).join('');
-  for(let row=0;row<5;row++){
-    for(let col=0;col<5;col++){
-      const key=`${col}-${row}`,pts=(row+1)*100,used=usedCells.has(key);
-      const dot=hasAnyImg(col,row)?'<div class="img-badge" title="Image attached"></div>':'';
-      if(editMode){
-        const qi=getImgData(col,row,'q');
-        const pi=getImgData(col,row,'p');
-        const tags=[];
-        if(qi) tags.push('<span style="font-size:.6rem;color:#a5d6a7;">Q</span>');
-        if(pi) tags.push('<span style="font-size:.6rem;color:#64b5f6;">P</span>');
-        b.innerHTML+=`<div class="cell edit-mode" onclick="openImgEditor(${col},${row})">
-          ${dot}
-          <span class="pts" style="font-size:clamp(1rem,1.8vw,1.4rem);opacity:.7">$${pts}</span>
-          <span style="font-size:.65rem;color:#4a8c1a;margin-top:2px">${tags.length?tags.join(' '):'+ img'}</span>
-        </div>`;
-      } else {
-        b.innerHTML+=`<div class="cell${used?' used':''}" id="c${key}" ${used?'':`onclick="openQ(${col},${row},${pts},'${key}')"`}>
-          ${dot}<span class="pts">$${pts}</span></div>`;
-      }
-    }
-  }
-}
-function openImgEditor(col,row){
-  editCell={col,row};
-  const q=QS[col][row];
-  const store=imgs(col,row);
-  const qi=getImgData(col,row,'q');
-  const pi=getImgData(col,row,'p');
-  document.getElementById('ieTitle').textContent=`${CATS[col]} — $${q.pts}`;
-  document.getElementById('ieQText').textContent=q.q;
-  document.getElementById('editCatText').value=CATS[col];
-  document.getElementById('editQText').value=q.q;
-  document.getElementById('editAText').value=q.a;
-  document.getElementById('editPText').value=q.p;
-  setPreview('Q',qi,store.qName||'(embedded)');
-  setPreview('P',pi,store.pName||'(embedded)');
-  document.getElementById('fileQ').value='';
-  document.getElementById('fileP').value='';
-  activePasteSlot='q';
-  document.getElementById('ieOverlay').classList.add('on');
-}
-function textChanged(field,value){
-  if(!editCell)return;
-  const {col,row}=editCell;
-  if(field==='cat'){
-    CATS[col]=value;
-    textStore.cats[col]=value;
-    document.getElementById('ieTitle').textContent=`${CATS[col]} — $${QS[col][row].pts}`;
-  } else {
-    const q=QS[col][row];
-    q[field]=value;
-    const key=`${col}-${row}`;
-    if(!textStore.cells[key])textStore.cells[key]={};
-    textStore.cells[key][field]=value;
-    if(field==='q')document.getElementById('ieQText').textContent=value;
-  }
-  saveTextStore();
-  renderBoard();
-}
-function applyImageSize(imgEl,size){
-  imgEl.style.width=size+'%';
-}
-function updateSizeUI(slot,size){
-  const up=slot.toUpperCase();
-  const slider=document.getElementById('size'+up);
-  const label=document.getElementById('sizeVal'+up);
-  if(slider) slider.value=size;
-  if(label) label.textContent=size+'%';
-}
-function setPreview(slot,src,name){
-  const wrap=document.getElementById('preview'+slot);
-  const imgEl=document.getElementById('prevImg'+slot);
-  const nameEl=document.getElementById('prevName'+slot);
-  const size=editCell?getImgSize(editCell.col,editCell.row,slot.toLowerCase()):DEFAULT_IMAGE_SIZE;
-  updateSizeUI(slot,size);
-  applyImageSize(imgEl,size);
-  if(src){wrap.classList.add('on');imgEl.src=src;nameEl.textContent=name||'';}
-  else{wrap.classList.remove('on');imgEl.src='';nameEl.textContent='';}
-}
-function storeImageData(slot,src,name,size){
-  if(!editCell||!src)return;
-  const d=imgs(editCell.col,editCell.row);
-  d[slot]=src;
-  d[slot+'Name']=name||'pasted image';
-  if(size) d[slot+'Size']=size;
-  setPreview(slot.toUpperCase(),src,d[slot+'Name']);
-  saveImgStore();
-}
-function storeImageFile(slot,file,name){
-  if(!file||!file.type.startsWith('image/'))return;
-  const reader=new FileReader();
-  reader.onload=e=>storeImageData(slot,e.target.result,name||file.name||'pasted image');
-  reader.readAsDataURL(file);
-}
-function fileChosen(input,slot){
-  const file=input.files[0];if(!file)return;
-  storeImageFile(slot,file,file.name);
-}
-function dragOver(e){e.preventDefault();}
-function dropFile(e,slot){
-  e.preventDefault();
-  setPasteSlot(slot);
-  storeImageFile(slot,e.dataTransfer.files[0]);
-}
-function setPasteSlot(slot){activePasteSlot=slot;}
-function sizeChanged(slot,value){
-  if(!editCell)return;
-  const size=Math.min(100,Math.max(25,Number(value)||DEFAULT_IMAGE_SIZE));
-  const d=imgs(editCell.col,editCell.row);
-  d[slot+'Size']=size;
-  updateSizeUI(slot.toUpperCase(),size);
-  applyImageSize(document.getElementById('prevImg'+slot.toUpperCase()),size);
-  saveImgStore();
-}
-function clipboardItemToImageFile(items){
-  for(const item of items){
-    if(item.kind==='file'&&item.type.startsWith('image/')) return item.getAsFile();
-  }
-  return null;
-}
-document.addEventListener('paste',e=>{
-  const overlay=document.getElementById('ieOverlay');
-  if(!editCell||!overlay.classList.contains('on'))return;
-  const file=clipboardItemToImageFile((e.clipboardData&&e.clipboardData.items)||[]);
-  if(!file)return;
-  e.preventDefault();
-  storeImageFile(activePasteSlot,file,'pasted image');
-});
-async function pasteImg(slot){
-  setPasteSlot(slot);
-  if(navigator.clipboard&&navigator.clipboard.read){
-    try{
-      const items=await navigator.clipboard.read();
-      for(const item of items){
-        const type=item.types.find(t=>t.startsWith('image/'));
-        if(type){
-          const blob=await item.getType(type);
-          storeImageFile(slot,new File([blob],'pasted image',{type}));
-          return;
-        }
-      }
-      alert('Clipboard does not contain an image.');
-      return;
-    }catch(_){/* Fall back to the in-app copied image below. */}
-  }
-  if(copiedImage){
-    storeImageData(slot,copiedImage.src,copiedImage.name,copiedImage.size);
-    return;
-  }
-  alert('Click the upload area, then press Ctrl/⌘+V to paste an image from your clipboard.');
-}
-async function copyImg(slot){
-  if(!editCell)return;
-  const src=getImgData(editCell.col,editCell.row,slot);
-  if(!src)return;
-  copiedImage={src,name:imgs(editCell.col,editCell.row)[slot+'Name']||'copied image',size:getImgSize(editCell.col,editCell.row,slot)};
-  if(!navigator.clipboard||!navigator.clipboard.write||typeof ClipboardItem==='undefined')return;
-  try{
-    const blob=await (await fetch(src)).blob();
-    await navigator.clipboard.write([new ClipboardItem({[blob.type||'image/png']:blob})]);
-  }catch(err){console.warn('Could not copy image to system clipboard:',err);}
-}
-function removeImg(slot){
-  const d=imgs(editCell.col,editCell.row);
-  d[slot]=null;d[slot+'Name']='';d[slot+'Size']=DEFAULT_IMAGE_SIZE;
-  const qi=getImgData(editCell.col,editCell.row,'q');
-  const pi=getImgData(editCell.col,editCell.row,'p');
-  setPreview('Q',qi,'(embedded)');
-  setPreview('P',pi,'(embedded)');
-  document.getElementById('file'+slot.toUpperCase()).value='';
-  saveImgStore();
-}
-function closeImgEditor(){
-  document.getElementById('ieOverlay').classList.remove('on');
-  editCell=null;renderBoard();
-}
-function openQ(col,row,pts,key){
-  curCell={col,row};curPts=pts;isDD=ddSet.has(key);
-  if(isDD){
-    document.getElementById('ddWho').textContent=`${teams[activeTeam].name} — How much will you wager?`;
-    document.getElementById('ddWager').value=pts;
-    document.getElementById('ddOverlay').classList.add('on');
-  } else {showModal(col,row,pts,false);}
-}
-function confirmDD(){
-  ddWager=Math.max(0,parseInt(document.getElementById('ddWager').value)||0);
-  document.getElementById('ddOverlay').classList.remove('on');
-  showModal(curCell.col,curCell.row,ddWager,true);
-}
-function showModal(col,row,pts,daily){
-  const q=QS[col][row];
-  const qi=getImgData(col,row,'q');
-  document.getElementById('mCat').textContent=CATS[col];
-  document.getElementById('mPts').textContent=daily?`Daily Double — $${pts} wagered`:`$${pts}`;
-  document.getElementById('mQ').textContent=q.q;
-  const qiEl=document.getElementById('mQImg');
-  qiEl.src=qi||'';qiEl.style.display=qi?'block':'none';applyImageSize(qiEl,getImgSize(col,row,'q'));
-  ['ansSection','pearlSection'].forEach(id=>document.getElementById(id).classList.remove('on'));
-  document.getElementById('scoreSection').classList.remove('on');
-  document.getElementById('revealBtn').style.display='';
-  document.getElementById('pearlBtn').style.display='none';
-  document.getElementById('mPearlImg').src='';document.getElementById('mPearlImg').style.display='none';
-  const mo=document.getElementById('modalOverlay');
-  mo.classList.add('on');mo.scrollTop=0;
-  startTimer(30);
-}
-function startTimer(s){
-  clearInterval(timerInterval);timerLeft=s;timerRunning=true;
-  const fill=document.getElementById('timerFill'),lbl=document.getElementById('timerLbl');
-  document.getElementById('pauseBtn').textContent='Pause';
-  fill.style.width='100%';fill.className='timer-fill';lbl.textContent=`${s}s`;
-  timerInterval=setInterval(()=>{
-    if(!timerRunning)return;
-    timerLeft--;
-    fill.style.width=(timerLeft/s*100)+'%';
-    lbl.textContent=timerLeft>0?`${timerLeft}s`:"Time's up!";
-    if(timerLeft<=10)fill.className='timer-fill warn';
-    if(timerLeft<=5)fill.className='timer-fill danger';
-    if(timerLeft<=0){clearInterval(timerInterval);revealAnswer();}
-  },1000);
-}
-function togglePause(){
-  timerRunning=!timerRunning;
-  document.getElementById('pauseBtn').textContent=timerRunning?'Pause':'Resume';
-}
-function maxFinalWager(score){if(score<=0)return 0;return Math.max(score,1000);}
-function openFinalJeopardy(){
-  if(!teams.length)return;
-  clearInterval(fjTimerInterval);
-  fjWagers=teams.map(()=>0);fjResolved=teams.map(()=>false);
-  fjTimer=30;fjTimerRunning=false;
-  document.getElementById('fjCategory').textContent=FINAL_JEOPARDY.category;
-  document.getElementById('fjQuestion').textContent=FINAL_JEOPARDY.q;
-  const fjqi=document.getElementById('fjQImg');
-  fjqi.src=FINAL_JEOPARDY.qi||'';fjqi.style.display=FINAL_JEOPARDY.qi?'block':'none';
-  document.getElementById('fjAnswer').textContent=FINAL_JEOPARDY.a;
-  const fjai=document.getElementById('fjAnsImg');
-  fjai.src=FINAL_JEOPARDY.pi||'';fjai.style.display=FINAL_JEOPARDY.pi?'block':'none';
-  document.getElementById('fjTimer').textContent='30s';
-  document.getElementById('fjPauseBtn').textContent='Pause';
-  renderFinalWagerRows();renderFinalScoreRows();
-  showFinalStep('fjStepWager');
-  document.getElementById('fjOverlay').classList.add('on');
-}
-function closeFinalJeopardy(){
-  clearInterval(fjTimerInterval);
-  document.getElementById('fjOverlay').classList.remove('on');
-}
-function showFinalStep(id){
-  ['fjStepWager','fjStepQuestion','fjStepAnswer'].forEach(x=>{
-    document.getElementById(x).classList.toggle('on',x===id);
-  });
-}
-function renderFinalWagerRows(){
-  document.getElementById('fjWagerRows').innerHTML=teams.map((t,i)=>{
-    const max=maxFinalWager(t.score);
-    return `<div class="fj-row">
-      <div class="fj-team" style="color:${t.color}">${t.name}</div>
-      <input class="fj-wager" id="fjW${i}" type="number" min="0" max="${max}" value="${Math.min(100,max)}">
-      <div class="fj-max">Max: $${max} (score: $${t.score})</div>
-    </div>`;
-  }).join('');
-}
-function lockFinalWagers(){
-  const next=[];
-  for(let i=0;i<teams.length;i++){
-    const max=maxFinalWager(teams[i].score);
-    const v=Math.floor(Math.max(0,Number(document.getElementById(`fjW${i}`).value)||0));
-    if(v>max){alert(`${teams[i].name} wager cannot exceed $${max}.`);return;}
-    next.push(v);
-  }
-  fjWagers=next;
-  showFinalStep('fjStepQuestion');
-  startFinalTimer();
-}
-function startFinalTimer(){
-  clearInterval(fjTimerInterval);
-  fjTimer=30;fjTimerRunning=true;
-  document.getElementById('fjTimer').textContent='30s';
-  document.getElementById('fjPauseBtn').textContent='Pause';
-  fjTimerInterval=setInterval(()=>{
-    if(!fjTimerRunning)return;
-    fjTimer--;
-    document.getElementById('fjTimer').textContent=fjTimer>0?`${fjTimer}s`:"Time's up!";
-    if(fjTimer<=0){clearInterval(fjTimerInterval);}
-  },1000);
-}
-function toggleFinalTimer(){
-  fjTimerRunning=!fjTimerRunning;
-  document.getElementById('fjPauseBtn').textContent=fjTimerRunning?'Pause':'Resume';
-}
-function revealFinalAnswer(){
-  clearInterval(fjTimerInterval);
-  renderFinalScoreRows();
-  showFinalStep('fjStepAnswer');
-}
-function renderFinalScoreRows(){
-  document.getElementById('fjScoreRows').innerHTML=teams.map((t,i)=>`
-    <div class="fj-row">
-      <div class="fj-team" style="color:${t.color}">${t.name}</div>
-      <div class="fj-max">Wager: $${fjWagers[i]||0}</div>
-      <button class="btn btn-cor" ${fjResolved[i]?'disabled':''} onclick="finalOutcome(${i},true)">Correct (+$${fjWagers[i]||0})</button>
-      <button class="btn btn-inc" ${fjResolved[i]?'disabled':''} onclick="finalOutcome(${i},false)">Incorrect (-$${fjWagers[i]||0})</button>
-    </div>
-  `).join('');
-}
-function finalOutcome(i,correct){
-  if(fjResolved[i]) return;
-  const delta=(fjWagers[i]||0)*(correct?1:-1);
-  teams[i].score+=delta;
-  fjResolved[i]=true;
-  renderSB();renderFinalScoreRows();
-}
-function revealAnswer(){
-  clearInterval(timerInterval);timerRunning=false;
-  const q=QS[curCell.col][curCell.row];
-  document.getElementById('ansText').textContent=q.a;
-  document.getElementById('ansSection').classList.add('on');
-  document.getElementById('revealBtn').style.display='none';
-  document.getElementById('pearlBtn').style.display='';
-  renderScoreBtns();
-  document.getElementById('scoreSection').classList.add('on');
-}
-function revealPearl(){
-  const q=QS[curCell.col][curCell.row];
-  const pi=getImgData(curCell.col,curCell.row,'p');
-  document.getElementById('pearlText').textContent=q.p;
-  const piEl=document.getElementById('mPearlImg');
-  piEl.src=pi||'';piEl.style.display=pi?'block':'none';applyImageSize(piEl,getImgSize(curCell.col,curCell.row,'p'));
-  document.getElementById('pearlSection').classList.add('on');
-}
-function renderScoreBtns(){
-  const pts=isDD?ddWager:curPts;
-  document.getElementById('scoreBtns').innerHTML=teams.map((t,i)=>`
-    <button class="btn btn-cor" onclick="award(${i},${pts})">&#10003; ${t.name} +$${pts}</button>
-    <button class="btn btn-inc" onclick="award(${i},${-pts})">&#10007; ${t.name} -$${pts}</button>
-  `).join('');
-}
-function award(i,pts){
-  teams[i].score+=pts;
-  usedCells.add(`${curCell.col}-${curCell.row}`);
-  renderSB();renderBoard();
-  document.querySelectorAll('.btn-cor,.btn-inc').forEach(b=>b.disabled=true);
-  setTimeout(()=>document.querySelectorAll('.btn-cor,.btn-inc').forEach(b=>b.disabled=false),800);
-}
-function closeModal(){
-  clearInterval(timerInterval);
-  document.getElementById('modalOverlay').classList.remove('on');
-  if(curCell)usedCells.add(`${curCell.col}-${curCell.row}`);
-  renderBoard();curCell=null;
-}
-
-setTeams(3);renderInputs();
-</script>
-</body>
-</html>
-
->>>>>>> origin/main
