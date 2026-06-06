@@ -84,6 +84,9 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 .upload-text{font-size:.82rem;color:#8bb4d8;}
 .upload-hint{font-size:.72rem;color:#5f8fbd;margin-top:4px;}
 .upload-text strong{color:#a5d6a7;}
+.image-slot-title{font-size:.72rem;text-transform:uppercase;letter-spacing:1.2px;color:#8bb4d8;font-weight:700;margin-bottom:8px;}
+.preview-block + .image-slot-title{margin-top:16px;}
+.image-slot-title .slot-num{color:#f5c842;}
 .preview-block{margin-top:12px;display:none;}
 .preview-block.on{display:block;}
 .preview-img{max-width:100%;max-height:320px;border-radius:6px;border:2px solid #2a6e3e;display:block;margin:0 auto 10px;object-fit:contain;background:#030c1a;}
@@ -111,7 +114,9 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 .formatted-text{white-space:pre-wrap;}
 .formatted-text strong{font-weight:700;}
 .formatted-text em{font-style:italic;}
-.modal-img{max-width:100%;max-height:60vh;border-radius:8px;display:block;margin:0 auto 16px;object-fit:contain;background:#030c1a;}
+.modal-img-stack{display:flex;flex-direction:column;gap:14px;margin-bottom:16px;}
+.modal-img{max-width:100%;max-height:60vh;border-radius:8px;display:block;margin:0 auto;object-fit:contain;background:#030c1a;}
+.modal-img-stack:empty{display:none;}
 .modal-img.q-style{border:2px solid #1e4080;}
 .modal-img.ans-style{border:2px solid #2a6e3e;}
 .modal-img.pearl-style{border:2px solid #1e4080;}
@@ -279,7 +284,9 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
       </div>
     </div>
     <div class="ie-slot slot-q">
-      <div class="ie-slot-label">Question Image &mdash; shown when question is opened</div>
+      <div class="ie-slot-label">Question Images &mdash; shown when question is opened</div>
+      <div class="upload-hint" style="margin-bottom:12px;">Add up to 2 question images.</div>
+      <div class="image-slot-title"><span class="slot-num">Image 1</span> of 2</div>
       <div class="upload-area" tabindex="0" onfocus="setPasteSlot('q')" onclick="setPasteSlot('q')" ondragover="dragOver(event)" ondrop="dropFile(event,'q')">
         <input type="file" accept="image/*" id="fileQ" onchange="fileChosen(this,'q')">
         <div class="upload-icon">&#128300;</div>
@@ -302,9 +309,34 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
           </div>
         </div>
       </div>
+      <div class="image-slot-title"><span class="slot-num">Image 2</span> of 2</div>
+      <div class="upload-area" tabindex="0" onfocus="setPasteSlot('q2')" onclick="setPasteSlot('q2')" ondragover="dragOver(event)" ondrop="dropFile(event,'q2')">
+        <input type="file" accept="image/*" id="fileQ2" onchange="fileChosen(this,'q2')">
+        <div class="upload-icon">&#128300;</div>
+        <div class="upload-text"><strong>Click to upload</strong>, drag &amp; drop, or paste</div>
+        <div class="upload-hint">Tip: copy an image, click here, then press Ctrl/⌘+V.</div>
+      </div>
+      <div class="upload-actions"><button class="btn-paste" onclick="pasteImg('q2')">Paste from Clipboard</button></div>
+      <div class="preview-block" id="previewQ2">
+        <img class="preview-img" id="prevImgQ2" src="" alt="">
+        <label class="size-control">Image size
+          <input id="sizeQ2" type="range" min="25" max="100" step="5" value="100" oninput="sizeChanged('q2',this.value)">
+          <span class="size-val" id="sizeValQ2">100%</span>
+        </label>
+        <div class="preview-footer">
+          <span class="preview-fname" id="prevNameQ2"></span>
+          <div class="preview-actions">
+            <button class="btn-copy" onclick="copyImg('q2')">Copy</button>
+            <button class="btn-paste" onclick="pasteImg('q2')">Paste</button>
+            <button class="btn-rm" onclick="removeImg('q2')">Remove</button>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="ie-slot slot-p">
-      <div class="ie-slot-label">Teaching Pearl Image &mdash; revealed with the pearl</div>
+      <div class="ie-slot-label">Teaching Pearl Images &mdash; revealed with the pearl</div>
+      <div class="upload-hint" style="margin-bottom:12px;">Add up to 2 teaching pearl images.</div>
+      <div class="image-slot-title"><span class="slot-num">Image 1</span> of 2</div>
       <div class="upload-area" tabindex="0" onfocus="setPasteSlot('p')" onclick="setPasteSlot('p')" ondragover="dragOver(event)" ondrop="dropFile(event,'p')">
         <input type="file" accept="image/*" id="fileP" onchange="fileChosen(this,'p')">
         <div class="upload-icon">&#9889;</div>
@@ -327,6 +359,29 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
           </div>
         </div>
       </div>
+      <div class="image-slot-title"><span class="slot-num">Image 2</span> of 2</div>
+      <div class="upload-area" tabindex="0" onfocus="setPasteSlot('p2')" onclick="setPasteSlot('p2')" ondragover="dragOver(event)" ondrop="dropFile(event,'p2')">
+        <input type="file" accept="image/*" id="fileP2" onchange="fileChosen(this,'p2')">
+        <div class="upload-icon">&#9889;</div>
+        <div class="upload-text"><strong>Click to upload</strong>, drag &amp; drop, or paste</div>
+        <div class="upload-hint">Tip: copy an image, click here, then press Ctrl/⌘+V.</div>
+      </div>
+      <div class="upload-actions"><button class="btn-paste" onclick="pasteImg('p2')">Paste from Clipboard</button></div>
+      <div class="preview-block" id="previewP2">
+        <img class="preview-img" id="prevImgP2" src="" alt="">
+        <label class="size-control">Image size
+          <input id="sizeP2" type="range" min="25" max="100" step="5" value="100" oninput="sizeChanged('p2',this.value)">
+          <span class="size-val" id="sizeValP2">100%</span>
+        </label>
+        <div class="preview-footer">
+          <span class="preview-fname" id="prevNameP2"></span>
+          <div class="preview-actions">
+            <button class="btn-copy" onclick="copyImg('p2')">Copy</button>
+            <button class="btn-paste" onclick="pasteImg('p2')">Paste</button>
+            <button class="btn-rm" onclick="removeImg('p2')">Remove</button>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="ie-footer">
       <button class="btn-ie-done" onclick="closeImgEditor()">Done</button>
@@ -339,7 +394,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
     <div class="m-cat" id="mCat"></div>
     <div class="m-pts" id="mPts"></div>
     <div class="m-q formatted-text" id="mQ"></div>
-    <img id="mQImg" class="modal-img q-style" src="" alt="" style="display:none;">
+    <div id="mQImgs" class="modal-img-stack"></div>
     <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
     <div class="timer-lbl" id="timerLbl">30s</div>
     <div class="btn-row">
@@ -355,7 +410,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
     <div class="section pearl-section" id="pearlSection">
       <div class="s-label pearl-label">&#9889; Teaching Pearl</div>
       <div class="pearl-text formatted-text" id="pearlText"></div>
-      <img id="mPearlImg" class="modal-img pearl-style" src="" alt="" style="display:none;">
+      <div id="mPearlImgs" class="modal-img-stack"></div>
     </div>
     <div class="score-section" id="scoreSection">
       <div class="score-label">Award points:</div>
@@ -468,12 +523,18 @@ function applyTextStore(){
     ['q','a','p'].forEach(field=>{if(typeof vals[field]==='string')q[field]=vals[field];});
   });
 }
+const IMAGE_SLOTS=['q','q2','p','p2'];
+function getEmbeddedImgData(col,row,slot){
+  const q=QS[col][row];
+  if(slot==='q')return q.qi;
+  if(slot==='p')return q.pi;
+  return '';
+}
 function getImgData(col,row,slot){
   const k=`${col}-${row}`;
   const store=imgStore[k]||{};
   if(store[slot]) return store[slot];
-  const q=QS[col][row];
-  return slot==='q'?q.qi:q.pi;
+  return getEmbeddedImgData(col,row,slot);
 }
 function getImgSize(col,row,slot){
   const store=imgStore[`${col}-${row}`]||{};
@@ -482,15 +543,25 @@ function getImgSize(col,row,slot){
 }
 function imgs(col,row){
   const k=`${col}-${row}`;
-  if(!imgStore[k]) imgStore[k]={q:null,qName:'',qSize:DEFAULT_IMAGE_SIZE,p:null,pName:'',pSize:DEFAULT_IMAGE_SIZE};
-  if(!imgStore[k].qName) imgStore[k].qName='';
-  if(!imgStore[k].pName) imgStore[k].pName='';
-  if(!imgStore[k].qSize) imgStore[k].qSize=DEFAULT_IMAGE_SIZE;
-  if(!imgStore[k].pSize) imgStore[k].pSize=DEFAULT_IMAGE_SIZE;
+  if(!imgStore[k]) imgStore[k]={};
+  IMAGE_SLOTS.forEach(slot=>{
+    if(!Object.prototype.hasOwnProperty.call(imgStore[k],slot)) imgStore[k][slot]=null;
+    if(!imgStore[k][slot+'Name']) imgStore[k][slot+'Name']='';
+    if(!imgStore[k][slot+'Size']) imgStore[k][slot+'Size']=DEFAULT_IMAGE_SIZE;
+  });
   return imgStore[k];
 }
+function getImgSlots(kind){return kind==='q'?['q','q2']:['p','p2'];}
+function getImgList(col,row,kind){
+  return getImgSlots(kind).map(slot=>({
+    slot,
+    src:getImgData(col,row,slot),
+    size:getImgSize(col,row,slot),
+    name:(imgStore[`${col}-${row}`]||{})[slot+'Name']||(getEmbeddedImgData(col,row,slot)?'(embedded)':'')
+  })).filter(img=>!!img.src);
+}
 function hasAnyImg(col,row){
-  return !!(getImgData(col,row,'q')||getImgData(col,row,'p'));
+  return IMAGE_SLOTS.some(slot=>!!getImgData(col,row,slot));
 }
 
 let numTeams=3,teams=[],usedCells=new Set();
@@ -548,11 +619,11 @@ function renderBoard(){
       const key=`${col}-${row}`,pts=(row+1)*100,used=usedCells.has(key);
       const dot=hasAnyImg(col,row)?'<div class="img-badge" title="Image attached"></div>':'';
       if(editMode){
-        const qi=getImgData(col,row,'q');
-        const pi=getImgData(col,row,'p');
+        const qCount=getImgList(col,row,'q').length;
+        const pCount=getImgList(col,row,'p').length;
         const tags=[];
-        if(qi) tags.push('<span style="font-size:.6rem;color:#a5d6a7;">Q</span>');
-        if(pi) tags.push('<span style="font-size:.6rem;color:#64b5f6;">P</span>');
+        if(qCount) tags.push(`<span style="font-size:.6rem;color:#a5d6a7;">Q${qCount>1?'×'+qCount:''}</span>`);
+        if(pCount) tags.push(`<span style="font-size:.6rem;color:#64b5f6;">P${pCount>1?'×'+pCount:''}</span>`);
         b.innerHTML+=`<div class="cell edit-mode" onclick="openImgEditor(${col},${row})">
           ${dot}
           <span class="pts" style="font-size:clamp(1rem,1.8vw,1.4rem);opacity:.7">$${pts}</span>
@@ -569,18 +640,14 @@ function openImgEditor(col,row){
   editCell={col,row};
   const q=QS[col][row];
   const store=imgs(col,row);
-  const qi=getImgData(col,row,'q');
-  const pi=getImgData(col,row,'p');
   document.getElementById('ieTitle').textContent=`${CATS[col]} — $${q.pts}`;
   setFormattedText('ieQText',q.q);
   document.getElementById('editCatText').value=CATS[col];
   document.getElementById('editQText').value=q.q;
   document.getElementById('editAText').value=q.a;
   document.getElementById('editPText').value=q.p;
-  setPreview('Q',qi,store.qName||'(embedded)');
-  setPreview('P',pi,store.pName||'(embedded)');
-  document.getElementById('fileQ').value='';
-  document.getElementById('fileP').value='';
+  IMAGE_SLOTS.forEach(slot=>setPreview(slot.toUpperCase(),getImgData(col,row,slot),store[slot+'Name']||(getEmbeddedImgData(col,row,slot)?'(embedded)':'')));
+  IMAGE_SLOTS.forEach(slot=>{document.getElementById('file'+slot.toUpperCase()).value='';});
   activePasteSlot='q';
   document.getElementById('ieOverlay').classList.add('on');
 }
@@ -604,6 +671,18 @@ function textChanged(field,value){
 }
 function applyImageSize(imgEl,size){
   imgEl.style.width=size+'%';
+}
+function renderImageStack(containerId,images,styleClass){
+  const wrap=document.getElementById(containerId);
+  wrap.innerHTML='';
+  images.forEach(({src,size,name},idx)=>{
+    const img=document.createElement('img');
+    img.className=`modal-img ${styleClass}`;
+    img.src=src;
+    img.alt=name||`Image ${idx+1}`;
+    applyImageSize(img,size);
+    wrap.appendChild(img);
+  });
 }
 function updateSizeUI(slot,size){
   const up=slot.toUpperCase();
@@ -708,10 +787,7 @@ async function copyImg(slot){
 function removeImg(slot){
   const d=imgs(editCell.col,editCell.row);
   d[slot]=null;d[slot+'Name']='';d[slot+'Size']=DEFAULT_IMAGE_SIZE;
-  const qi=getImgData(editCell.col,editCell.row,'q');
-  const pi=getImgData(editCell.col,editCell.row,'p');
-  setPreview('Q',qi,'(embedded)');
-  setPreview('P',pi,'(embedded)');
+  setPreview(slot.toUpperCase(),getImgData(editCell.col,editCell.row,slot),getEmbeddedImgData(editCell.col,editCell.row,slot)?'(embedded)':'');
   document.getElementById('file'+slot.toUpperCase()).value='';
   saveImgStore();
 }
@@ -734,17 +810,15 @@ function confirmDD(){
 }
 function showModal(col,row,pts,daily){
   const q=QS[col][row];
-  const qi=getImgData(col,row,'q');
   document.getElementById('mCat').textContent=CATS[col];
   document.getElementById('mPts').textContent=daily?`Daily Double — $${pts} wagered`:`$${pts}`;
   setFormattedText('mQ',q.q);
-  const qiEl=document.getElementById('mQImg');
-  qiEl.src=qi||'';qiEl.style.display=qi?'block':'none';applyImageSize(qiEl,getImgSize(col,row,'q'));
+  renderImageStack('mQImgs',getImgList(col,row,'q'),'q-style');
   ['ansSection','pearlSection'].forEach(id=>document.getElementById(id).classList.remove('on'));
   document.getElementById('scoreSection').classList.remove('on');
   document.getElementById('revealBtn').style.display='';
   document.getElementById('pearlBtn').style.display='none';
-  document.getElementById('mPearlImg').src='';document.getElementById('mPearlImg').style.display='none';
+  renderImageStack('mPearlImgs',[],'pearl-style');
   const mo=document.getElementById('modalOverlay');
   mo.classList.add('on');mo.scrollTop=0;
   startTimer(30);
@@ -868,10 +942,8 @@ function revealAnswer(){
 }
 function revealPearl(){
   const q=QS[curCell.col][curCell.row];
-  const pi=getImgData(curCell.col,curCell.row,'p');
   setFormattedText('pearlText',q.p);
-  const piEl=document.getElementById('mPearlImg');
-  piEl.src=pi||'';piEl.style.display=pi?'block':'none';applyImageSize(piEl,getImgSize(curCell.col,curCell.row,'p'));
+  renderImageStack('mPearlImgs',getImgList(curCell.col,curCell.row,'p'),'pearl-style');
   document.getElementById('pearlSection').classList.add('on');
 }
 function renderScoreBtns(){
