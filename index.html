@@ -27,8 +27,8 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 .header{text-align:center;padding:14px 20px 8px;background:linear-gradient(180deg,#0d1f3e,#071428);border-bottom:3px solid #c9a227;position:relative;}
 .title{font-family:'Anton',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);color:#f5c842;letter-spacing:2px;}
 .subtitle{color:#8bb4d8;font-size:.85rem;margin-top:2px;letter-spacing:1px;}
-.header-actions{position:absolute;top:50%;right:16px;transform:translateY(-50%);display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
-.edit-img-btn,.data-btn{background:#1a3060;border:2px solid #1e4080;border-radius:8px;color:#8bb4d8;font-family:'Barlow',sans-serif;font-size:.78rem;font-weight:700;padding:7px 14px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.header-actions{position:absolute;top:50%;right:16px;transform:translateY(-50%);display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
+.edit-img-btn,.data-btn{background:#1a3060;border:2px solid #1e4080;border-radius:7px;color:#8bb4d8;font-family:'Barlow',sans-serif;font-size:.72rem;font-weight:700;padding:5px 9px;cursor:pointer;transition:all .2s;white-space:nowrap;}
 .edit-img-btn:hover,.data-btn:hover{border-color:#c9a227;color:#f5c842;}
 .edit-img-btn.active{background:#1a3a08;border-color:#4a8c1a;color:#a5d6a7;}
 .data-btn.export{background:#2b2608;border-color:#8a7418;color:#f5c842;}
@@ -214,15 +214,15 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
     <div class="title">HemePath Jeopardy!</div>
     <div class="subtitle">Hematopathology Resident Review &mdash; click a team card to select active team</div>
     <div class="header-actions">
-      <button class="data-btn export" onclick="exportChanges()">&#128190; Export Changes</button>
-      <button class="data-btn import" onclick="document.getElementById('importChangesFile').click()">&#128193; Import Changes</button>
-      <button class="edit-img-btn" onclick="openFinalImgEditor()">&#127937; Edit Final Images</button>
-      <button class="edit-img-btn" id="editImgBtn" onclick="toggleEditMode()">&#128247; Edit Images</button>
+      <button class="data-btn export" onclick="exportChanges()" title="Export changes" aria-label="Export changes">&#128190; Export</button>
+      <button class="data-btn import" onclick="document.getElementById('importChangesFile').click()" title="Import changes" aria-label="Import changes">&#128193; Import</button>
+      <button class="edit-img-btn" onclick="openFinalImgEditor()" title="Edit Final Jeopardy images" aria-label="Edit Final Jeopardy images">&#127937; Final</button>
+      <button class="edit-img-btn" id="editImgBtn" onclick="toggleEditMode()" title="Edit board images" aria-label="Edit board images">&#128247; Board</button>
     </div>
     <input id="importChangesFile" type="file" accept="application/json,.json" style="display:none" onchange="importChangesFile(this)">
   </div>
   <div class="scoreboard" id="scoreboard"></div>
-  <div class="edit-banner" id="editBanner">&#128247; Image Edit Mode &mdash; click any cell to add or remove images. Use &ldquo;Edit Final Images&rdquo; for Final Jeopardy. Green dot = image attached. Click &ldquo;Done Editing&rdquo; when finished.</div>
+  <div class="edit-banner" id="editBanner">&#128247; Image Edit Mode &mdash; click any cell to add or remove images. Use &ldquo;Final&rdquo; for Final Jeopardy. Green dot = image attached. Click &ldquo;Done&rdquo; when finished.</div>
   <div class="board-wrap"><div class="board" id="board"></div></div>
 </div>
 
@@ -724,7 +724,7 @@ function renderSB(){
 function toggleEditMode(){
   editMode=!editMode;
   const btn=document.getElementById('editImgBtn');
-  btn.textContent=editMode?'Done Editing':'Edit Images';
+  btn.textContent=editMode?'✓ Done':'📷 Board';
   btn.classList.toggle('active',editMode);
   document.getElementById('editBanner').classList.toggle('on',editMode);
   renderBoard();
