@@ -36,8 +36,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 .final-btn{position:absolute;top:50%;left:16px;transform:translateY(-50%);background:#3a2a06;border:2px solid #c9a227;border-radius:8px;color:#f5c842;font-family:'Barlow',sans-serif;font-size:.78rem;font-weight:700;padding:7px 14px;cursor:pointer;transition:all .2s;white-space:nowrap;}
 .final-btn:hover{filter:brightness(1.1);}
 .scoreboard{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;padding:10px 16px;background:#071428;}
-.team-card{background:#102040;border:2px solid #1e4080;border-radius:8px;padding:8px 18px;text-align:center;min-width:110px;cursor:pointer;transition:border-color .2s,background .2s;user-select:none;}
-.team-card.active{border-color:#f5c842;background:#1a3060;}
+.team-card{background:#102040;border:2px solid #1e4080;border-radius:8px;padding:8px 18px;text-align:center;min-width:110px;user-select:none;}
 .tname{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
 .tscore{font-family:'Anton',sans-serif;font-size:1.9rem;color:#f5c842;}
 .tscore.neg{color:#ff6b6b;}
@@ -57,7 +56,11 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 .dd-overlay.on{display:flex;}
 .dd-big{font-family:'Anton',sans-serif;font-size:clamp(4rem,10vw,7rem);color:#f5c842;line-height:1;animation:ddPop .5s cubic-bezier(.34,1.56,.64,1);}
 .dd-who{font-size:1.1rem;color:#8bb4d8;margin:10px 0 8px;}
-.dd-score{font-family:'Anton',sans-serif;font-size:2rem;color:#a5d6a7;margin-bottom:18px;letter-spacing:1px;}
+.dd-score{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:4px 0 18px;max-width:min(680px,90vw);}
+.dd-score-card{background:#102040;border:2px solid #1e4080;border-radius:8px;padding:8px 14px;min-width:110px;}
+.dd-score-name{font-size:.68rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;font-weight:700;}
+.dd-score-val{font-family:'Anton',sans-serif;font-size:1.7rem;color:#a5d6a7;}
+.dd-score-val.neg{color:#ff6b6b;}
 .dd-wager{background:#102040;border:2px solid #c9a227;border-radius:8px;padding:12px 18px;font-family:'Anton',sans-serif;font-size:2rem;color:#f5c842;text-align:center;width:200px;margin-bottom:20px;}
 .dd-wager:focus{outline:none;}
 @keyframes ddPop{from{opacity:0;transform:scale(.2);}to{opacity:1;transform:scale(1);}}
@@ -213,7 +216,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
   <div class="header">
     <button class="final-btn" onclick="openFinalJeopardy()">&#127937; Final Jeopardy</button>
     <div class="title">HemePath Jeopardy!</div>
-    <div class="subtitle">Hematopathology Resident Review &mdash; click a team card to select active team</div>
+    <div class="subtitle">Hematopathology Resident Review &mdash; award points after each answer</div>
     <div class="header-actions">
       <button class="data-btn export" onclick="exportChanges()" title="Export changes" aria-label="Export changes">&#128190; Export</button>
       <button class="data-btn import" onclick="document.getElementById('importChangesFile').click()" title="Import changes" aria-label="Import changes">&#128193; Import</button>
@@ -680,7 +683,7 @@ function getImgList(col,row,kind){
   })).filter(img=>!!img.src);
 }
 let numTeams=3,teams=[],usedCells=new Set();
-let activeTeam=0,curCell=null,curPts=0,isDD=false,ddWager=0;
+let curCell=null,curPts=0,isDD=false,ddWager=0;
 let timerLeft=30,timerRunning=false,timerInterval=null;
 let activePasteSlot='q',copiedImage=null;
 let editMode=false,editCell=null;
@@ -713,9 +716,9 @@ function startGame(){
 }
 function formatMoney(value){return `${value<0?'-':''}$${Math.abs(value)}`;}
 function renderSB(){
-  document.getElementById('scoreboard').innerHTML=teams.map((t,i)=>`
-    <div class="team-card${i===activeTeam?' active':''}" onclick="activeTeam=${i};renderSB()">
-      <div class="tname" style="color:${t.color}">${t.name}</div>
+  document.getElementById('scoreboard').innerHTML=teams.map(t=>`
+    <div class="team-card">
+      <div class="tname" style="color:${t.color}">${escapeHtml(t.name)}</div>
       <div class="tscore${t.score<0?' neg':''}">${formatMoney(t.score)}</div>
     </div>`).join('');
 }
@@ -1015,9 +1018,12 @@ function closeImgEditor(){
 function openQ(col,row,pts,key){
   curCell={col,row};curPts=pts;isDD=ddSet.has(key);
   if(isDD){
-    const team=teams[activeTeam];
-    document.getElementById('ddWho').textContent=`${team.name} — How much will you wager?`;
-    document.getElementById('ddScore').textContent=`Current score: ${formatMoney(team.score)}`;
+    document.getElementById('ddWho').textContent='Choose a Daily Double wager';
+    document.getElementById('ddScore').innerHTML=teams.map(t=>`
+      <div class="dd-score-card">
+        <div class="dd-score-name" style="color:${t.color}">${escapeHtml(t.name)}</div>
+        <div class="dd-score-val${t.score<0?' neg':''}">${formatMoney(t.score)}</div>
+      </div>`).join('');
     document.getElementById('ddWager').value=pts;
     document.getElementById('ddOverlay').classList.add('on');
   } else {showModal(col,row,pts,false);}
