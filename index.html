@@ -65,7 +65,8 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 .ie-title{font-family:'Anton',sans-serif;font-size:1.5rem;color:#a5d6a7;margin-bottom:4px;}
 .ie-qtext{font-size:.85rem;color:#8bb4d8;line-height:1.5;border-left:3px solid #4a8c1a;padding-left:10px;margin-top:8px;}
 .text-edit{background:#071428;border:2px solid #1e4080;border-radius:8px;padding:16px 18px;margin-bottom:14px;}
-.text-edit-title{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;color:#f5c842;margin-bottom:12px;}
+.text-edit-title{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;color:#f5c842;margin-bottom:6px;}
+.text-edit-hint{font-size:.72rem;color:#8bb4d8;margin-bottom:12px;line-height:1.4;}
 .text-field{margin-bottom:10px;}
 .text-field:last-child{margin-bottom:0;}
 .text-field label{display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:1.2px;color:#8bb4d8;font-weight:700;margin-bottom:5px;}
@@ -107,6 +108,9 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 .m-cat{font-size:.72rem;text-transform:uppercase;letter-spacing:2px;color:#8bb4d8;margin-bottom:6px;}
 .m-pts{font-family:'Anton',sans-serif;font-size:2.2rem;color:#f5c842;margin-bottom:16px;}
 .m-q{font-size:1.3rem;font-weight:600;line-height:1.5;color:white;margin-bottom:14px;}
+.formatted-text{white-space:pre-wrap;}
+.formatted-text strong{font-weight:700;}
+.formatted-text em{font-style:italic;}
 .modal-img{max-width:100%;max-height:60vh;border-radius:8px;display:block;margin:0 auto 16px;object-fit:contain;background:#030c1a;}
 .modal-img.q-style{border:2px solid #1e4080;}
 .modal-img.ans-style{border:2px solid #2a6e3e;}
@@ -222,7 +226,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
     <div class="fj-step" id="fjStepQuestion">
       <div class="fj-card">
         <div class="fj-label">Final Jeopardy Clue</div>
-        <div class="fj-q" id="fjQuestion"></div>
+        <div class="fj-q formatted-text" id="fjQuestion"></div>
         <img id="fjQImg" style="max-width:100%;max-height:300px;border-radius:8px;display:none;margin:12px auto 0;border:2px solid #1e4080;object-fit:contain;background:#030c1a;">
         <div class="fj-timer" id="fjTimer">30s</div>
       </div>
@@ -234,7 +238,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
     <div class="fj-step" id="fjStepAnswer">
       <div class="fj-card">
         <div class="fj-label">Correct Response</div>
-        <div class="fj-answer" id="fjAnswer"></div>
+        <div class="fj-answer formatted-text" id="fjAnswer"></div>
         <img id="fjAnsImg" style="max-width:100%;max-height:300px;border-radius:8px;display:none;margin:12px auto 0;border:2px solid #2a6e3e;object-fit:contain;background:#030c1a;">
       </div>
       <div class="fj-score-actions">
@@ -256,6 +260,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
     </div>
     <div class="text-edit">
       <div class="text-edit-title">Quick Text Edits</div>
+      <div class="text-edit-hint">Line breaks, indentation, and hyphenated bullets are preserved. Use **bold** and *italic* for emphasis.</div>
       <div class="text-field">
         <label for="editCatText">Category</label>
         <input class="text-input" id="editCatText" type="text" oninput="textChanged('cat',this.value)">
@@ -333,7 +338,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
   <div class="modal">
     <div class="m-cat" id="mCat"></div>
     <div class="m-pts" id="mPts"></div>
-    <div class="m-q" id="mQ"></div>
+    <div class="m-q formatted-text" id="mQ"></div>
     <img id="mQImg" class="modal-img q-style" src="" alt="" style="display:none;">
     <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
     <div class="timer-lbl" id="timerLbl">30s</div>
@@ -345,11 +350,11 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
     </div>
     <div class="section ans-section" id="ansSection">
       <div class="s-label ans-label">&#10003; Answer</div>
-      <div class="ans-text" id="ansText"></div>
+      <div class="ans-text formatted-text" id="ansText"></div>
     </div>
     <div class="section pearl-section" id="pearlSection">
       <div class="s-label pearl-label">&#9889; Teaching Pearl</div>
-      <div class="pearl-text" id="pearlText"></div>
+      <div class="pearl-text formatted-text" id="pearlText"></div>
       <img id="mPearlImg" class="modal-img pearl-style" src="" alt="" style="display:none;">
     </div>
     <div class="score-section" id="scoreSection">
@@ -435,6 +440,24 @@ function loadTextStore(){
 function saveTextStore(){
   try{localStorage.setItem(TEXT_STORE_KEY,JSON.stringify(textStore));}
   catch(err){console.warn('Could not persist text edits:',err);}
+}
+function escapeHtml(value){
+  return String(value??'')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+function formatText(value){
+  return escapeHtml(value)
+    .replace(/\*\*([^*]+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/__([^_]+?)__/g,'<strong>$1</strong>')
+    .replace(/(^|[^*])\*([^*\n]+?)\*/g,'$1<em>$2</em>')
+    .replace(/(^|[^_])_([^_\n]+?)_/g,'$1<em>$2</em>');
+}
+function setFormattedText(id,value){
+  document.getElementById(id).innerHTML=formatText(value);
 }
 function applyTextStore(){
   Object.entries(textStore.cats||{}).forEach(([col,val])=>{if(CATS[col]&&typeof val==='string')CATS[col]=val;});
@@ -549,7 +572,7 @@ function openImgEditor(col,row){
   const qi=getImgData(col,row,'q');
   const pi=getImgData(col,row,'p');
   document.getElementById('ieTitle').textContent=`${CATS[col]} — $${q.pts}`;
-  document.getElementById('ieQText').textContent=q.q;
+  setFormattedText('ieQText',q.q);
   document.getElementById('editCatText').value=CATS[col];
   document.getElementById('editQText').value=q.q;
   document.getElementById('editAText').value=q.a;
@@ -574,7 +597,7 @@ function textChanged(field,value){
     const key=`${col}-${row}`;
     if(!textStore.cells[key])textStore.cells[key]={};
     textStore.cells[key][field]=value;
-    if(field==='q')document.getElementById('ieQText').textContent=value;
+    if(field==='q')setFormattedText('ieQText',value);
   }
   saveTextStore();
   renderBoard();
@@ -714,7 +737,7 @@ function showModal(col,row,pts,daily){
   const qi=getImgData(col,row,'q');
   document.getElementById('mCat').textContent=CATS[col];
   document.getElementById('mPts').textContent=daily?`Daily Double — $${pts} wagered`:`$${pts}`;
-  document.getElementById('mQ').textContent=q.q;
+  setFormattedText('mQ',q.q);
   const qiEl=document.getElementById('mQImg');
   qiEl.src=qi||'';qiEl.style.display=qi?'block':'none';applyImageSize(qiEl,getImgSize(col,row,'q'));
   ['ansSection','pearlSection'].forEach(id=>document.getElementById(id).classList.remove('on'));
@@ -752,10 +775,10 @@ function openFinalJeopardy(){
   fjWagers=teams.map(()=>0);fjResolved=teams.map(()=>false);
   fjTimer=30;fjTimerRunning=false;
   document.getElementById('fjCategory').textContent=FINAL_JEOPARDY.category;
-  document.getElementById('fjQuestion').textContent=FINAL_JEOPARDY.q;
+  setFormattedText('fjQuestion',FINAL_JEOPARDY.q);
   const fjqi=document.getElementById('fjQImg');
   fjqi.src=FINAL_JEOPARDY.qi||'';fjqi.style.display=FINAL_JEOPARDY.qi?'block':'none';
-  document.getElementById('fjAnswer').textContent=FINAL_JEOPARDY.a;
+  setFormattedText('fjAnswer',FINAL_JEOPARDY.a);
   const fjai=document.getElementById('fjAnsImg');
   fjai.src=FINAL_JEOPARDY.pi||'';fjai.style.display=FINAL_JEOPARDY.pi?'block':'none';
   document.getElementById('fjTimer').textContent='30s';
@@ -836,7 +859,7 @@ function finalOutcome(i,correct){
 function revealAnswer(){
   clearInterval(timerInterval);timerRunning=false;
   const q=QS[curCell.col][curCell.row];
-  document.getElementById('ansText').textContent=q.a;
+  setFormattedText('ansText',q.a);
   document.getElementById('ansSection').classList.add('on');
   document.getElementById('revealBtn').style.display='none';
   document.getElementById('pearlBtn').style.display='';
@@ -846,7 +869,7 @@ function revealAnswer(){
 function revealPearl(){
   const q=QS[curCell.col][curCell.row];
   const pi=getImgData(curCell.col,curCell.row,'p');
-  document.getElementById('pearlText').textContent=q.p;
+  setFormattedText('pearlText',q.p);
   const piEl=document.getElementById('mPearlImg');
   piEl.src=pi||'';piEl.style.display=pi?'block':'none';applyImageSize(piEl,getImgSize(curCell.col,curCell.row,'p'));
   document.getElementById('pearlSection').classList.add('on');
