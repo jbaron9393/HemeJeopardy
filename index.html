@@ -56,7 +56,8 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 .dd-overlay{display:none;position:fixed;inset:0;background:rgba(3,12,26,.97);z-index:300;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px;}
 .dd-overlay.on{display:flex;}
 .dd-big{font-family:'Anton',sans-serif;font-size:clamp(4rem,10vw,7rem);color:#f5c842;line-height:1;animation:ddPop .5s cubic-bezier(.34,1.56,.64,1);}
-.dd-who{font-size:1.1rem;color:#8bb4d8;margin:10px 0 20px;}
+.dd-who{font-size:1.1rem;color:#8bb4d8;margin:10px 0 8px;}
+.dd-score{font-family:'Anton',sans-serif;font-size:2rem;color:#a5d6a7;margin-bottom:18px;letter-spacing:1px;}
 .dd-wager{background:#102040;border:2px solid #c9a227;border-radius:8px;padding:12px 18px;font-family:'Anton',sans-serif;font-size:2rem;color:#f5c842;text-align:center;width:200px;margin-bottom:20px;}
 .dd-wager:focus{outline:none;}
 @keyframes ddPop{from{opacity:0;transform:scale(.2);}to{opacity:1;transform:scale(1);}}
@@ -203,6 +204,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 <div class="dd-overlay" id="ddOverlay">
   <div class="dd-big">DAILY<br>DOUBLE!</div>
   <div class="dd-who" id="ddWho"></div>
+  <div class="dd-score" id="ddScore"></div>
   <input class="dd-wager" id="ddWager" type="number" min="0" placeholder="Wager amount">
   <button class="btn btn-reveal" style="font-size:1rem;padding:12px 32px;" onclick="confirmDD()">CONFIRM WAGER</button>
 </div>
@@ -709,11 +711,12 @@ function startGame(){
   document.getElementById('game').style.display='block';
   renderSB();renderBoard();
 }
+function formatMoney(value){return `${value<0?'-':''}$${Math.abs(value)}`;}
 function renderSB(){
   document.getElementById('scoreboard').innerHTML=teams.map((t,i)=>`
     <div class="team-card${i===activeTeam?' active':''}" onclick="activeTeam=${i};renderSB()">
       <div class="tname" style="color:${t.color}">${t.name}</div>
-      <div class="tscore${t.score<0?' neg':''}">${t.score<0?'-':''}$${Math.abs(t.score)}</div>
+      <div class="tscore${t.score<0?' neg':''}">${formatMoney(t.score)}</div>
     </div>`).join('');
 }
 function toggleEditMode(){
@@ -1012,7 +1015,9 @@ function closeImgEditor(){
 function openQ(col,row,pts,key){
   curCell={col,row};curPts=pts;isDD=ddSet.has(key);
   if(isDD){
-    document.getElementById('ddWho').textContent=`${teams[activeTeam].name} — How much will you wager?`;
+    const team=teams[activeTeam];
+    document.getElementById('ddWho').textContent=`${team.name} — How much will you wager?`;
+    document.getElementById('ddScore').textContent=`Current score: ${formatMoney(team.score)}`;
     document.getElementById('ddWager').value=pts;
     document.getElementById('ddOverlay').classList.add('on');
   } else {showModal(col,row,pts,false);}
