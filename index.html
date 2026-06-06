@@ -306,7 +306,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
         <input type="file" accept="image/*" id="fileQ" onchange="fileChosen(this,'q')">
         <div class="upload-icon">&#128300;</div>
         <div class="upload-text"><strong>Click to upload</strong>, drag &amp; drop, or paste</div>
-        <div class="upload-hint">Tip: copy an image, click here, then press Ctrl/⌘+V.</div>
+        <div class="upload-hint">Tip: images are automatically optimized for export/import. Copy an image, click here, then press Ctrl/⌘+V.</div>
       </div>
       <div class="upload-actions"><button class="btn-paste" onclick="pasteImg('q')">Paste from Clipboard</button></div>
       <div class="preview-block" id="previewQ">
@@ -329,7 +329,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
         <input type="file" accept="image/*" id="fileQ2" onchange="fileChosen(this,'q2')">
         <div class="upload-icon">&#128300;</div>
         <div class="upload-text"><strong>Click to upload</strong>, drag &amp; drop, or paste</div>
-        <div class="upload-hint">Tip: copy an image, click here, then press Ctrl/⌘+V.</div>
+        <div class="upload-hint">Tip: images are automatically optimized for export/import. Copy an image, click here, then press Ctrl/⌘+V.</div>
       </div>
       <div class="upload-actions"><button class="btn-paste" onclick="pasteImg('q2')">Paste from Clipboard</button></div>
       <div class="preview-block" id="previewQ2">
@@ -356,7 +356,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
         <input type="file" accept="image/*" id="fileP" onchange="fileChosen(this,'p')">
         <div class="upload-icon">&#9889;</div>
         <div class="upload-text"><strong>Click to upload</strong>, drag &amp; drop, or paste</div>
-        <div class="upload-hint">Tip: copy an image, click here, then press Ctrl/⌘+V.</div>
+        <div class="upload-hint">Tip: images are automatically optimized for export/import. Copy an image, click here, then press Ctrl/⌘+V.</div>
       </div>
       <div class="upload-actions"><button class="btn-paste" onclick="pasteImg('p')">Paste from Clipboard</button></div>
       <div class="preview-block" id="previewP">
@@ -379,7 +379,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
         <input type="file" accept="image/*" id="fileP2" onchange="fileChosen(this,'p2')">
         <div class="upload-icon">&#9889;</div>
         <div class="upload-text"><strong>Click to upload</strong>, drag &amp; drop, or paste</div>
-        <div class="upload-hint">Tip: copy an image, click here, then press Ctrl/⌘+V.</div>
+        <div class="upload-hint">Tip: images are automatically optimized for export/import. Copy an image, click here, then press Ctrl/⌘+V.</div>
       </div>
       <div class="upload-actions"><button class="btn-paste" onclick="pasteImg('p2')">Paste from Clipboard</button></div>
       <div class="preview-block" id="previewP2">
@@ -402,7 +402,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
         <input type="file" accept="image/*" id="fileP3" onchange="fileChosen(this,'p3')">
         <div class="upload-icon">&#9889;</div>
         <div class="upload-text"><strong>Click to upload</strong>, drag &amp; drop, or paste</div>
-        <div class="upload-hint">Tip: copy an image, click here, then press Ctrl/⌘+V.</div>
+        <div class="upload-hint">Tip: images are automatically optimized for export/import. Copy an image, click here, then press Ctrl/⌘+V.</div>
       </div>
       <div class="upload-actions"><button class="btn-paste" onclick="pasteImg('p3')">Paste from Clipboard</button></div>
       <div class="preview-block" id="previewP3">
@@ -515,6 +515,8 @@ const FINAL_JEOPARDY={
 const IMG_STORE_KEY='hemeJeopardy.imageStore.v2';
 const TEXT_STORE_KEY='hemeJeopardy.textStore.v1';
 const DEFAULT_IMAGE_SIZE=100;
+const MAX_STORED_IMAGE_DIMENSION=1400;
+const STORED_IMAGE_QUALITY=0.82;
 const imgStore=loadImgStore();
 const textStore=loadTextStore();
 applyTextStore();
@@ -523,8 +525,12 @@ function loadImgStore(){
   catch(_){return{};}
 }
 function saveImgStore(){
-  try{localStorage.setItem(IMG_STORE_KEY,JSON.stringify(imgStore));}
-  catch(err){console.warn('Could not persist image store:',err);}
+  try{localStorage.setItem(IMG_STORE_KEY,JSON.stringify(imgStore));return true;}
+  catch(err){
+    console.warn('Could not persist image store:',err);
+    alert('Could not save image changes in this browser storage. New uploads are optimized automatically, but you may need to remove a very large old image or export your changes before continuing.');
+    return false;
+  }
 }
 function loadTextStore(){
   try{const raw=localStorage.getItem(TEXT_STORE_KEY);if(!raw)return{cats:{},cells:{}};const p=JSON.parse(raw);return p&&typeof p==='object'?{cats:p.cats||{},cells:p.cells||{}}:{cats:{},cells:{}};}
@@ -808,11 +814,63 @@ function storeImageData(slot,src,name,size){
   setPreview(slot.toUpperCase(),src,d[slot+'Name']);
   saveImgStore();
 }
-function storeImageFile(slot,file,name){
+function readBlobAsDataURL(blob){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(String(reader.result||''));
+    reader.onerror=()=>reject(reader.error||new Error('Could not read image file.'));
+    reader.readAsDataURL(blob);
+  });
+}
+function loadImageDataURL(src){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>resolve(img);
+    img.onerror=()=>reject(new Error('Could not load image for optimization.'));
+    img.src=src;
+  });
+}
+function canvasToBlob(canvas,type,quality){
+  return new Promise(resolve=>{
+    if(canvas.toBlob)canvas.toBlob(blob=>resolve(blob),type,quality);
+    else resolve(null);
+  });
+}
+async function optimizeImageFile(file){
+  const original=await readBlobAsDataURL(file);
+  if(file.type==='image/svg+xml'||file.type==='image/gif')return original;
+  try{
+    const img=await loadImageDataURL(original);
+    const width=img.naturalWidth||img.width;
+    const height=img.naturalHeight||img.height;
+    if(!width||!height)return original;
+    const scale=Math.min(1,MAX_STORED_IMAGE_DIMENSION/Math.max(width,height));
+    const canvas=document.createElement('canvas');
+    canvas.width=Math.max(1,Math.round(width*scale));
+    canvas.height=Math.max(1,Math.round(height*scale));
+    const ctx=canvas.getContext('2d');
+    if(!ctx)return original;
+    ctx.fillStyle='#fff';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(img,0,0,canvas.width,canvas.height);
+    const blob=await canvasToBlob(canvas,'image/jpeg',STORED_IMAGE_QUALITY);
+    if(!blob)return original;
+    const optimized=await readBlobAsDataURL(blob);
+    return optimized.length<original.length?optimized:original;
+  }catch(err){
+    console.warn('Could not optimize image before storing:',err);
+    return original;
+  }
+}
+async function storeImageFile(slot,file,name){
   if(!file||!file.type.startsWith('image/'))return;
-  const reader=new FileReader();
-  reader.onload=e=>storeImageData(slot,e.target.result,name||file.name||'pasted image');
-  reader.readAsDataURL(file);
+  try{
+    const src=await optimizeImageFile(file);
+    storeImageData(slot,src,name||file.name||'pasted image');
+  }catch(err){
+    console.warn('Could not store image file:',err);
+    alert('Could not read that image. Please try a different image file.');
+  }
 }
 function fileChosen(input,slot){
   const file=input.files[0];if(!file)return;
