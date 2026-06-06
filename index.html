@@ -121,9 +121,10 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 .modal-img-stack{display:flex;flex-direction:column;gap:14px;margin-bottom:16px;}
 .modal-img-stack.multi{flex-direction:row;align-items:flex-start;justify-content:center;}
 .modal-img{max-width:100%;max-height:60vh;border-radius:8px;display:block;margin:0 auto;object-fit:contain;background:#030c1a;}
-.modal-img-stack.multi .modal-img{max-width:calc(50% - 7px);max-height:55vh;}
+.modal-img-stack.count-2 .modal-img{max-width:calc(50% - 7px);max-height:55vh;}
+.modal-img-stack.count-3 .modal-img{max-width:calc(33.333% - 10px);max-height:52vh;}
 .modal-img-stack:empty{display:none;}
-@media (max-width:700px){.modal-img-stack.multi{flex-direction:column;}.modal-img-stack.multi .modal-img{max-width:100%;}}
+@media (max-width:700px){.modal-img-stack.multi{flex-direction:column;}.modal-img-stack.count-2 .modal-img,.modal-img-stack.count-3 .modal-img{max-width:100%;}}
 .modal-img.q-style{border:2px solid #1e4080;}
 .modal-img.ans-style{border:2px solid #2a6e3e;}
 .modal-img.pearl-style{border:2px solid #1e4080;}
@@ -347,8 +348,8 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
     </div>
     <div class="ie-slot slot-p">
       <div class="ie-slot-label">Teaching Pearl Images &mdash; revealed with the pearl</div>
-      <div class="upload-hint" style="margin-bottom:12px;">Add up to 2 teaching pearl images.</div>
-      <div class="image-slot-title"><span class="slot-num">Image 1</span> of 2</div>
+      <div class="upload-hint" style="margin-bottom:12px;">Add up to 3 teaching pearl images.</div>
+      <div class="image-slot-title"><span class="slot-num">Image 1</span> of 3</div>
       <div class="upload-area" tabindex="0" onfocus="setPasteSlot('p')" onclick="setPasteSlot('p')" ondragover="dragOver(event)" ondrop="dropFile(event,'p')">
         <input type="file" accept="image/*" id="fileP" onchange="fileChosen(this,'p')">
         <div class="upload-icon">&#9889;</div>
@@ -371,7 +372,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
           </div>
         </div>
       </div>
-      <div class="image-slot-title"><span class="slot-num">Image 2</span> of 2</div>
+      <div class="image-slot-title"><span class="slot-num">Image 2</span> of 3</div>
       <div class="upload-area" tabindex="0" onfocus="setPasteSlot('p2')" onclick="setPasteSlot('p2')" ondragover="dragOver(event)" ondrop="dropFile(event,'p2')">
         <input type="file" accept="image/*" id="fileP2" onchange="fileChosen(this,'p2')">
         <div class="upload-icon">&#9889;</div>
@@ -391,6 +392,29 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
             <button class="btn-copy" onclick="copyImg('p2')">Copy</button>
             <button class="btn-paste" onclick="pasteImg('p2')">Paste</button>
             <button class="btn-rm" onclick="removeImg('p2')">Remove</button>
+          </div>
+        </div>
+      </div>
+      <div class="image-slot-title"><span class="slot-num">Image 3</span> of 3</div>
+      <div class="upload-area" tabindex="0" onfocus="setPasteSlot('p3')" onclick="setPasteSlot('p3')" ondragover="dragOver(event)" ondrop="dropFile(event,'p3')">
+        <input type="file" accept="image/*" id="fileP3" onchange="fileChosen(this,'p3')">
+        <div class="upload-icon">&#9889;</div>
+        <div class="upload-text"><strong>Click to upload</strong>, drag &amp; drop, or paste</div>
+        <div class="upload-hint">Tip: copy an image, click here, then press Ctrl/⌘+V.</div>
+      </div>
+      <div class="upload-actions"><button class="btn-paste" onclick="pasteImg('p3')">Paste from Clipboard</button></div>
+      <div class="preview-block" id="previewP3">
+        <img class="preview-img" id="prevImgP3" src="" alt="">
+        <label class="size-control">Image size
+          <input id="sizeP3" type="range" min="25" max="100" step="5" value="100" oninput="sizeChanged('p3',this.value)">
+          <span class="size-val" id="sizeValP3">100%</span>
+        </label>
+        <div class="preview-footer">
+          <span class="preview-fname" id="prevNameP3"></span>
+          <div class="preview-actions">
+            <button class="btn-copy" onclick="copyImg('p3')">Copy</button>
+            <button class="btn-paste" onclick="pasteImg('p3')">Paste</button>
+            <button class="btn-rm" onclick="removeImg('p3')">Remove</button>
           </div>
         </div>
       </div>
@@ -585,7 +609,7 @@ function applyTextStore(){
     ['q','a','p'].forEach(field=>{if(typeof vals[field]==='string')q[field]=vals[field];});
   });
 }
-const IMAGE_SLOTS=['q','q2','p','p2'];
+const IMAGE_SLOTS=['q','q2','p','p2','p3'];
 function getEmbeddedImgData(col,row,slot){
   const q=QS[col][row];
   if(slot==='q')return q.qi;
@@ -613,7 +637,7 @@ function imgs(col,row){
   });
   return imgStore[k];
 }
-function getImgSlots(kind){return kind==='q'?['q','q2']:['p','p2'];}
+function getImgSlots(kind){return kind==='q'?['q','q2']:['p','p2','p3'];}
 function getImgList(col,row,kind){
   return getImgSlots(kind).map(slot=>({
     slot,
@@ -744,6 +768,8 @@ function renderImageStack(containerId,images,styleClass){
   const wrap=document.getElementById(containerId);
   wrap.innerHTML='';
   wrap.classList.toggle('multi',images.length>1);
+  ['count-2','count-3'].forEach(c=>wrap.classList.remove(c));
+  if(images.length>1)wrap.classList.add(`count-${images.length}`);
   images.forEach(({src,size,name},idx)=>{
     const img=document.createElement('img');
     img.className=`modal-img ${styleClass}`;
