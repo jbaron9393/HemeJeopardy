@@ -216,12 +216,13 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
     <div class="header-actions">
       <button class="data-btn export" onclick="exportChanges()">&#128190; Export Changes</button>
       <button class="data-btn import" onclick="document.getElementById('importChangesFile').click()">&#128193; Import Changes</button>
+      <button class="edit-img-btn" onclick="openFinalImgEditor()">&#127937; Edit Final Images</button>
       <button class="edit-img-btn" id="editImgBtn" onclick="toggleEditMode()">&#128247; Edit Images</button>
     </div>
     <input id="importChangesFile" type="file" accept="application/json,.json" style="display:none" onchange="importChangesFile(this)">
   </div>
   <div class="scoreboard" id="scoreboard"></div>
-  <div class="edit-banner" id="editBanner">&#128247; Image Edit Mode &mdash; click any cell to add or remove images. Green dot = image attached. Click &ldquo;Done Editing&rdquo; when finished.</div>
+  <div class="edit-banner" id="editBanner">&#128247; Image Edit Mode &mdash; click any cell to add or remove images. Use &ldquo;Edit Final Images&rdquo; for Final Jeopardy. Green dot = image attached. Click &ldquo;Done Editing&rdquo; when finished.</div>
   <div class="board-wrap"><div class="board" id="board"></div></div>
 </div>
 
@@ -247,7 +248,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
       <div class="fj-card">
         <div class="fj-label">Final Jeopardy Clue</div>
         <div class="fj-q formatted-text" id="fjQuestion"></div>
-        <img id="fjQImg" style="max-width:100%;max-height:300px;border-radius:8px;display:none;margin:12px auto 0;border:2px solid #1e4080;object-fit:contain;background:#030c1a;">
+        <div id="fjQImgs" class="modal-img-stack"></div>
         <div class="fj-timer" id="fjTimer">30s</div>
       </div>
       <div class="fj-ctrl">
@@ -259,7 +260,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
       <div class="fj-card">
         <div class="fj-label">Correct Response</div>
         <div class="fj-answer formatted-text" id="fjAnswer"></div>
-        <img id="fjAnsImg" style="max-width:100%;max-height:300px;border-radius:8px;display:none;margin:12px auto 0;border:2px solid #2a6e3e;object-fit:contain;background:#030c1a;">
+        <div id="fjAnsImgs" class="modal-img-stack"></div>
       </div>
       <div class="fj-score-actions">
         <div class="fj-label">Score each team</div>
@@ -282,25 +283,25 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
       <div class="text-edit-title">Quick Text Edits</div>
       <div class="text-edit-hint">Line breaks, indentation, and hyphenated bullets are preserved. Use **bold** and *italic* for emphasis.</div>
       <div class="text-field">
-        <label for="editCatText">Category</label>
+        <label id="editCatLabel" for="editCatText">Category</label>
         <input class="text-input" id="editCatText" type="text" oninput="textChanged('cat',this.value)">
       </div>
       <div class="text-field">
-        <label for="editQText">Question</label>
+        <label id="editQLabel" for="editQText">Question</label>
         <textarea class="text-area" id="editQText" oninput="textChanged('q',this.value)"></textarea>
       </div>
       <div class="text-field">
-        <label for="editAText">Answer</label>
+        <label id="editALabel" for="editAText">Answer</label>
         <textarea class="text-area" id="editAText" oninput="textChanged('a',this.value)"></textarea>
       </div>
-      <div class="text-field">
-        <label for="editPText">Teaching Pearl</label>
+      <div class="text-field" id="editPField">
+        <label id="editPLabel" for="editPText">Teaching Pearl</label>
         <textarea class="text-area" id="editPText" oninput="textChanged('p',this.value)"></textarea>
       </div>
     </div>
     <div class="ie-slot slot-q">
-      <div class="ie-slot-label">Question Images &mdash; shown when question is opened</div>
-      <div class="upload-hint" style="margin-bottom:12px;">Add up to 2 question images.</div>
+      <div class="ie-slot-label" id="qSlotLabel">Question Images &mdash; shown when question is opened</div>
+      <div class="upload-hint" id="qSlotHint" style="margin-bottom:12px;">Add up to 2 question images.</div>
       <div class="image-slot-title"><span class="slot-num">Image 1</span> of 2</div>
       <div class="upload-area" tabindex="0" onfocus="setPasteSlot('q')" onclick="setPasteSlot('q')" ondragover="dragOver(event)" ondrop="dropFile(event,'q')">
         <input type="file" accept="image/*" id="fileQ" onchange="fileChosen(this,'q')">
@@ -349,8 +350,8 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
       </div>
     </div>
     <div class="ie-slot slot-p">
-      <div class="ie-slot-label">Teaching Pearl Images &mdash; revealed with the pearl</div>
-      <div class="upload-hint" style="margin-bottom:12px;">Add up to 3 teaching pearl images.</div>
+      <div class="ie-slot-label" id="pSlotLabel">Teaching Pearl Images &mdash; revealed with the pearl</div>
+      <div class="upload-hint" id="pSlotHint" style="margin-bottom:12px;">Add up to 3 teaching pearl images.</div>
       <div class="image-slot-title"><span class="slot-num">Image 1</span> of 3</div>
       <div class="upload-area" tabindex="0" onfocus="setPasteSlot('p')" onclick="setPasteSlot('p')" ondragover="dragOver(event)" ondrop="dropFile(event,'p')">
         <input type="file" accept="image/*" id="fileP" onchange="fileChosen(this,'p')">
@@ -520,6 +521,7 @@ Second image: Giant proerythroblasts with basophilic and vacuolated cytoplasm, u
 
 const IMG_STORE_KEY='hemeJeopardy.imageStore.v2';
 const TEXT_STORE_KEY='hemeJeopardy.textStore.v1';
+const FINAL_IMG_KEY='final';
 const DEFAULT_IMAGE_SIZE=100;
 const MAX_STORED_IMAGE_DIMENSION=1400;
 const STORED_IMAGE_QUALITY=0.82;
@@ -538,9 +540,15 @@ function saveImgStore(){
     return false;
   }
 }
+function emptyTextStore(){return{cats:{},cells:{},final:{}};}
 function loadTextStore(){
-  try{const raw=localStorage.getItem(TEXT_STORE_KEY);if(!raw)return{cats:{},cells:{}};const p=JSON.parse(raw);return p&&typeof p==='object'?{cats:p.cats||{},cells:p.cells||{}}:{cats:{},cells:{}};}
-  catch(_){return{cats:{},cells:{}};}
+  try{
+    const raw=localStorage.getItem(TEXT_STORE_KEY);
+    if(!raw)return emptyTextStore();
+    const p=JSON.parse(raw);
+    return p&&typeof p==='object'?{cats:p.cats||{},cells:p.cells||{},final:p.final||{}}:emptyTextStore();
+  }
+  catch(_){return emptyTextStore();}
 }
 function saveTextStore(){
   try{localStorage.setItem(TEXT_STORE_KEY,JSON.stringify(textStore));}
@@ -622,27 +630,36 @@ function applyTextStore(){
     if(!q||!vals)return;
     ['q','a','p'].forEach(field=>{if(typeof vals[field]==='string')q[field]=vals[field];});
   });
+  const final=textStore.final||{};
+  ['category','q','a'].forEach(field=>{if(typeof final[field]==='string')FINAL_JEOPARDY[field]=final[field];});
 }
 const IMAGE_SLOTS=['q','q2','p','p2','p3'];
+function imgKey(col,row){return col===FINAL_IMG_KEY?FINAL_IMG_KEY:`${col}-${row}`;}
+function editImgArgs(){return editCell?.final?[FINAL_IMG_KEY,null]:[editCell.col,editCell.row];}
 function getEmbeddedImgData(col,row,slot){
+  if(col===FINAL_IMG_KEY){
+    if(slot==='q')return FINAL_JEOPARDY.qi;
+    if(slot==='p')return FINAL_JEOPARDY.pi;
+    return '';
+  }
   const q=QS[col][row];
   if(slot==='q')return q.qi;
   if(slot==='p')return q.pi;
   return '';
 }
 function getImgData(col,row,slot){
-  const k=`${col}-${row}`;
+  const k=imgKey(col,row);
   const store=imgStore[k]||{};
   if(store[slot]) return store[slot];
   return getEmbeddedImgData(col,row,slot);
 }
 function getImgSize(col,row,slot){
-  const store=imgStore[`${col}-${row}`]||{};
+  const store=imgStore[imgKey(col,row)]||{};
   const size=Number(store[slot+'Size']);
   return Number.isFinite(size)?Math.min(100,Math.max(25,size)):DEFAULT_IMAGE_SIZE;
 }
 function imgs(col,row){
-  const k=`${col}-${row}`;
+  const k=imgKey(col,row);
   if(!imgStore[k]) imgStore[k]={};
   IMAGE_SLOTS.forEach(slot=>{
     if(!Object.prototype.hasOwnProperty.call(imgStore[k],slot)) imgStore[k][slot]=null;
@@ -653,11 +670,12 @@ function imgs(col,row){
 }
 function getImgSlots(kind){return kind==='q'?['q','q2']:['p','p2','p3'];}
 function getImgList(col,row,kind){
+  const k=imgKey(col,row);
   return getImgSlots(kind).map(slot=>({
     slot,
     src:getImgData(col,row,slot),
     size:getImgSize(col,row,slot),
-    name:(imgStore[`${col}-${row}`]||{})[slot+'Name']||(getEmbeddedImgData(col,row,slot)?'(embedded)':'')
+    name:(imgStore[k]||{})[slot+'Name']||(getEmbeddedImgData(col,row,slot)?'(embedded)':'')
   })).filter(img=>!!img.src);
 }
 function hasAnyImg(col,row){
@@ -736,8 +754,19 @@ function renderBoard(){
     }
   }
 }
+function setEditorMode(isFinal){
+  document.getElementById('editCatLabel').textContent=isFinal?'Final Jeopardy Category':'Category';
+  document.getElementById('editQLabel').textContent=isFinal?'Final Jeopardy Clue':'Question';
+  document.getElementById('editALabel').textContent=isFinal?'Correct Response':'Answer';
+  document.getElementById('editPField').style.display=isFinal?'none':'';
+  document.getElementById('qSlotLabel').textContent=isFinal?'Final Jeopardy Clue Images — shown with the final clue':'Question Images — shown when question is opened';
+  document.getElementById('qSlotHint').textContent=isFinal?'Add up to 2 Final Jeopardy clue images.':'Add up to 2 question images.';
+  document.getElementById('pSlotLabel').textContent=isFinal?'Final Jeopardy Answer Images — revealed with the correct response':'Teaching Pearl Images — revealed with the pearl';
+  document.getElementById('pSlotHint').textContent=isFinal?'Add up to 3 Final Jeopardy answer images.':'Add up to 3 teaching pearl images.';
+}
 function openImgEditor(col,row){
   editCell={col,row};
+  setEditorMode(false);
   const q=QS[col][row];
   const store=imgs(col,row);
   document.getElementById('ieTitle').textContent=`${CATS[col]} — $${q.pts}`;
@@ -751,8 +780,33 @@ function openImgEditor(col,row){
   activePasteSlot='q';
   document.getElementById('ieOverlay').classList.add('on');
 }
+function openFinalImgEditor(){
+  editCell={final:true};
+  setEditorMode(true);
+  const store=imgs(FINAL_IMG_KEY,null);
+  document.getElementById('ieTitle').textContent='Final Jeopardy Images';
+  setFormattedText('ieQText',FINAL_JEOPARDY.q);
+  document.getElementById('editCatText').value=FINAL_JEOPARDY.category;
+  document.getElementById('editQText').value=FINAL_JEOPARDY.q;
+  document.getElementById('editAText').value=FINAL_JEOPARDY.a;
+  document.getElementById('editPText').value='';
+  IMAGE_SLOTS.forEach(slot=>setPreview(slot.toUpperCase(),getImgData(FINAL_IMG_KEY,null,slot),store[slot+'Name']||(getEmbeddedImgData(FINAL_IMG_KEY,null,slot)?'(embedded)':'')));
+  IMAGE_SLOTS.forEach(slot=>{document.getElementById('file'+slot.toUpperCase()).value='';});
+  activePasteSlot='q';
+  document.getElementById('ieOverlay').classList.add('on');
+}
 function textChanged(field,value){
   if(!editCell)return;
+  if(editCell.final){
+    if(!textStore.final)textStore.final={};
+    const finalField=field==='cat'?'category':field;
+    if(finalField==='p')return;
+    FINAL_JEOPARDY[finalField]=value;
+    textStore.final[finalField]=value;
+    if(finalField==='q')setFormattedText('ieQText',value);
+    saveTextStore();
+    return;
+  }
   const {col,row}=editCell;
   if(field==='cat'){
     CATS[col]=value;
@@ -805,7 +859,8 @@ function setPreview(slot,src,name){
   const wrap=document.getElementById('preview'+slot);
   const imgEl=document.getElementById('prevImg'+slot);
   const nameEl=document.getElementById('prevName'+slot);
-  const size=editCell?getImgSize(editCell.col,editCell.row,slot.toLowerCase()):DEFAULT_IMAGE_SIZE;
+  const [col,row]=editCell?editImgArgs():[null,null];
+  const size=editCell?getImgSize(col,row,slot.toLowerCase()):DEFAULT_IMAGE_SIZE;
   updateSizeUI(slot,size);
   applyImageSize(imgEl,size);
   if(src){wrap.classList.add('on');imgEl.src=src;nameEl.textContent=name||'';}
@@ -813,7 +868,8 @@ function setPreview(slot,src,name){
 }
 function storeImageData(slot,src,name,size){
   if(!editCell||!src)return;
-  const d=imgs(editCell.col,editCell.row);
+  const [col,row]=editImgArgs();
+  const d=imgs(col,row);
   d[slot]=src;
   d[slot+'Name']=name||'pasted image';
   if(size) d[slot+'Size']=size;
@@ -892,7 +948,8 @@ function setPasteSlot(slot){activePasteSlot=slot;}
 function sizeChanged(slot,value){
   if(!editCell)return;
   const size=Math.min(100,Math.max(25,Number(value)||DEFAULT_IMAGE_SIZE));
-  const d=imgs(editCell.col,editCell.row);
+  const [col,row]=editImgArgs();
+  const d=imgs(col,row);
   d[slot+'Size']=size;
   updateSizeUI(slot.toUpperCase(),size);
   applyImageSize(document.getElementById('prevImg'+slot.toUpperCase()),size);
@@ -937,9 +994,10 @@ async function pasteImg(slot){
 }
 async function copyImg(slot){
   if(!editCell)return;
-  const src=getImgData(editCell.col,editCell.row,slot);
+  const [col,row]=editImgArgs();
+  const src=getImgData(col,row,slot);
   if(!src)return;
-  copiedImage={src,name:imgs(editCell.col,editCell.row)[slot+'Name']||'copied image',size:getImgSize(editCell.col,editCell.row,slot)};
+  copiedImage={src,name:imgs(col,row)[slot+'Name']||'copied image',size:getImgSize(col,row,slot)};
   if(!navigator.clipboard?.write||typeof ClipboardItem==='undefined')return;
   try{
     const blob=await (await fetch(src)).blob();
@@ -947,9 +1005,10 @@ async function copyImg(slot){
   }catch(err){console.warn('Could not copy image to system clipboard:',err);}
 }
 function removeImg(slot){
-  const d=imgs(editCell.col,editCell.row);
+  const [col,row]=editImgArgs();
+  const d=imgs(col,row);
   d[slot]=null;d[slot+'Name']='';d[slot+'Size']=DEFAULT_IMAGE_SIZE;
-  setPreview(slot.toUpperCase(),getImgData(editCell.col,editCell.row,slot),getEmbeddedImgData(editCell.col,editCell.row,slot)?'(embedded)':'');
+  setPreview(slot.toUpperCase(),getImgData(col,row,slot),getEmbeddedImgData(col,row,slot)?'(embedded)':'');
   document.getElementById('file'+slot.toUpperCase()).value='';
   saveImgStore();
 }
@@ -1012,11 +1071,9 @@ function openFinalJeopardy(){
   fjTimer=30;fjTimerRunning=false;
   document.getElementById('fjCategory').textContent=FINAL_JEOPARDY.category;
   setFormattedText('fjQuestion',FINAL_JEOPARDY.q);
-  const fjqi=document.getElementById('fjQImg');
-  fjqi.src=FINAL_JEOPARDY.qi||'';fjqi.style.display=FINAL_JEOPARDY.qi?'block':'none';
+  renderImageStack('fjQImgs',getImgList(FINAL_IMG_KEY,null,'q'),'q-style');
   setFormattedText('fjAnswer',FINAL_JEOPARDY.a);
-  const fjai=document.getElementById('fjAnsImg');
-  fjai.src=FINAL_JEOPARDY.pi||'';fjai.style.display=FINAL_JEOPARDY.pi?'block':'none';
+  renderImageStack('fjAnsImgs',getImgList(FINAL_IMG_KEY,null,'p'),'ans-style');
   document.getElementById('fjTimer').textContent='30s';
   document.getElementById('fjPauseBtn').textContent='Pause';
   renderFinalWagerRows();renderFinalScoreRows();
