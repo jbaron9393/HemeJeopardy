@@ -53,7 +53,6 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
 .cell.edit-mode:hover{background:#152808 !important;border-color:#4a8c1a !important;transform:scale(1.03);}
 .cell .pts{font-family:'Anton',sans-serif;font-size:clamp(1.4rem,2.5vw,2rem);color:#f5c842;}
 .cell.used .pts{opacity:0;}
-.img-badge{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:#4a8c1a;}
 .dd-overlay{display:none;position:fixed;inset:0;background:rgba(3,12,26,.97);z-index:300;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px;}
 .dd-overlay.on{display:flex;}
 .dd-big{font-family:'Anton',sans-serif;font-size:clamp(4rem,10vw,7rem);color:#f5c842;line-height:1;animation:ddPop .5s cubic-bezier(.34,1.56,.64,1);}
@@ -222,7 +221,7 @@ body{background:#030c1a;color:white;font-family:'Barlow',sans-serif;min-height:1
     <input id="importChangesFile" type="file" accept="application/json,.json" style="display:none" onchange="importChangesFile(this)">
   </div>
   <div class="scoreboard" id="scoreboard"></div>
-  <div class="edit-banner" id="editBanner">&#128247; Image Edit Mode &mdash; click any cell to add or remove images. Use &ldquo;Final&rdquo; for Final Jeopardy. Green dot = image attached. Click &ldquo;Done&rdquo; when finished.</div>
+  <div class="edit-banner" id="editBanner">&#128247; Image Edit Mode &mdash; click any cell to add or remove images. Use &ldquo;Final&rdquo; for Final Jeopardy. Click &ldquo;Done&rdquo; when finished.</div>
   <div class="board-wrap"><div class="board" id="board"></div></div>
 </div>
 
@@ -678,10 +677,6 @@ function getImgList(col,row,kind){
     name:(imgStore[k]||{})[slot+'Name']||(getEmbeddedImgData(col,row,slot)?'(embedded)':'')
   })).filter(img=>!!img.src);
 }
-function hasAnyImg(col,row){
-  return IMAGE_SLOTS.some(slot=>!!getImgData(col,row,slot));
-}
-
 let numTeams=3,teams=[],usedCells=new Set();
 let activeTeam=0,curCell=null,curPts=0,isDD=false,ddWager=0;
 let timerLeft=30,timerRunning=false,timerInterval=null;
@@ -735,7 +730,6 @@ function renderBoard(){
   for(let row=0;row<5;row++){
     for(let col=0;col<5;col++){
       const key=`${col}-${row}`,pts=(row+1)*100,used=usedCells.has(key);
-      const dot=hasAnyImg(col,row)?'<div class="img-badge" title="Image attached"></div>':'';
       if(editMode){
         const qCount=getImgList(col,row,'q').length;
         const pCount=getImgList(col,row,'p').length;
@@ -743,13 +737,12 @@ function renderBoard(){
         if(qCount) tags.push(`<span style="font-size:.6rem;color:#a5d6a7;">Q${qCount>1?'×'+qCount:''}</span>`);
         if(pCount) tags.push(`<span style="font-size:.6rem;color:#64b5f6;">P${pCount>1?'×'+pCount:''}</span>`);
         b.innerHTML+=`<div class="cell edit-mode" onclick="openImgEditor(${col},${row})">
-          ${dot}
           <span class="pts" style="font-size:clamp(1rem,1.8vw,1.4rem);opacity:.7">$${pts}</span>
           <span style="font-size:.65rem;color:#4a8c1a;margin-top:2px">${tags.length?tags.join(' '):'+ img'}</span>
         </div>`;
       } else {
         b.innerHTML+=`<div class="cell${used?' used':''}" id="c${key}" ${used?'':`onclick="openQ(${col},${row},${pts},'${key}')"`}>
-          ${dot}<span class="pts">$${pts}</span></div>`;
+          <span class="pts">$${pts}</span></div>`;
       }
     }
   }
